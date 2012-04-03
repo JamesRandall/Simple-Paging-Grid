@@ -44,7 +44,7 @@ In your document ready event handler configure your grid
 
 Like many jQuery plugins the Simple Paging Grid is configured using an options dictionary as can be seen above. Option keys include:
 
-Option          |Description
+**Option**      |**Description**
 ----------------|-----------------------------------------
 columnNames     |An array of titles for the column headers
 columnKeys      |An array of property names within the data block, one for each column
