@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Simple Paging Grid - Linking Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="../../css/simplePagingGrid-0.1.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <script type="text/javascript" src="script/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="script/data.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+				var regex = /id=([^&]+)/;
+		        var id = regex.exec(window.location)[1];
+				var data = getData();
+				$.each(data, function(index,row) {
+					if (row.OrderLineID == id) {
+						$("#productTitle").html(row.Name);
+						return;
+					}	
+				});
+		    });
+	</script>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <div class="navbar navbar-fixed-top">
+              <div class="navbar-inner">
+                <div class="container-fluid">
+                  <a class="brand" href="#">Simple Paging Grid - Hyperlink Example</a>
+                </div>
+              </div>
+            </div>
+        </header>
+        <section id="main">
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<p>You selected <strong><em id="productTitle"></em></strong></p>
+					<p><a href="index.html">Back</a></p>
+				</div>
+			</div>
+        </section>
+    </div>
+</body>
+</html>
