@@ -1,6 +1,9 @@
 # README
 
-Simple Paging Grid is a lightweight CSS friendly readonly grid that supports both preloaded and dynamically loaded data and is readily compatible with the Twitter Bootstrap <http://twitter.github.com/bootstrap/> library. 
+Simple Paging Grid is a lightweight CSS friendly readonly grid that supports both preloaded and dynamically loaded data and is readily compatible with the Twitter Bootstrap <http://twitter.github.com/bootstrap/> library:
+
+![Screenshot]
+(http://www.accidentalfish.com/simple-paging-grid-screenshot.png) 
 
 It's built as a jQuery plugin and has been developed and tested against version 1.7.1
 
