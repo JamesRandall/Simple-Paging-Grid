@@ -38,7 +38,7 @@ Include the stylesheet simplePagingGrid.css (all this includes are the triangle 
 Include jQuery, Mustache and the Simple Paging Grid script:
 
     <script src="/script/jquery-1.7.1.min.js" type="text/javascript">
-    <script src="/script/mustache.min.js" type="text/javascript">
+    <script src="/script/mustache.js" type="text/javascript">
     <script src="/script/simplePagingGrid-0.1.min.js" type="text/javascript">
 
 Note that jQuery and Mustache can be found at:
