@@ -20,6 +20,7 @@
       }
     </style>
     <script type="text/javascript" src="script/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="script/mustache.js"></script>
     <script type="text/javascript" src="script/data.js"></script>
     <script type="text/javascript" src="../../script/simplePagingGrid-0.1.min.js"></script>
 	<script type="text/javascript">
@@ -28,7 +29,7 @@
 		            columnNames: ["Name", "Price ($)", "Quantity"],
 		            columnKeys: ["Name", "Price", "Quantity"],
 		            columnWidths: ["50%", "25%", "25%"],
-		            columnLinks: ["orderLineView.html?id={OrderLineID}", null, null],
+		            cellTemplates:["<a href='orderLineView.html?id={{OrderLineID}}'>{{Name}}</a>", null, "{{Quantity}} units"],
 		            data: getData()
 		        });
 		    });

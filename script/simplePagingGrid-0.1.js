@@ -1,41 +1,32 @@
 ﻿(function ($) {
-    function buildLink(linkTemplate, rowData) {
-        var link = linkTemplate;
-        var substitutions = /\{.*?\}/;
-        var match = substitutions.exec(link);
-        var firstHalf;
-        var secondHalf;
-        var tokenName;
-        var linkData;
-        while (match != null) {
-            tokenName = match[0].substr(1, match[0].length - 2);
-            firstHalf = link.substr(0, match.index);
-            secondHalf = link.substr(match.index + match[0].length);
-            linkData = rowData[tokenName];
-            link = firstHalf + linkData + secondHalf;
-            match = substitutions.exec(link);
-        }
-        return link;
-    }
-
     function dataPage(data, currentPage, pageSize) {
         return data.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
     }
 
     $.fn.simplePagingGrid = function (options) {
+        var templates = $.extend({
+            buttonBarTemplate: '<div><button class="btn">&laquo; Prev</button><button class="btn pull-right">Next &raquo</button></div><div class="clearfix"></div>',
+            tableTemplate: '<table><thead></thead><tbody></tbody></table>',
+            headerTemplate: '<th width="{{width}}">{{title}}</th>',
+            sortableHeaderTemplate: '<th width="{{width}}"><ul class="sort"><li class="sort-ascending"/><li class="sort-descending"/></ul>{{title}}</th>'
+        }, options.templates);
+        
         var settings = $.extend({
             pageSize: 10,
             columnWidths: [],
-            columnLinks: null,
+            cellTemplates: null,
             sortable: [],
             sortOrder: "asc",
             initialSortColumn: null,
-            tableClass: "table"
+            tableClass: "table",
         }, options);
+        
+        settings.templates = templates;
 
         return this.each(function () {
             var table;
             var tbody;
+            var thead;
             var headerRow;
             var headerCell;
             var data;
@@ -114,12 +105,8 @@
                     var tr = $('<tr>');
                     $.each(settings.columnKeys, function (index, propertyName) {
                         var td = $('<td>');
-                        var link;
-                        if (settings.columnLinks !== null && settings.columnLinks.length > index && settings.columnLinks[index] !== null) {
-                            link = $('<a>');
-                            link.html(rowData[propertyName]);
-                            link.attr('href', buildLink(settings.columnLinks[index], rowData));
-                            td.append(link);
+                        if (settings.cellTemplates !== null && index < settings.cellTemplates.length && settings.cellTemplates[index] !== null) {
+                            td.html(Mustache.render(settings.cellTemplates[index], rowData));
                         }
                         else {
                             td.html(rowData[propertyName]);
@@ -139,27 +126,24 @@
                 dataUrl = settings.dataUrl;
             }
 
-            table = $("<table><thead><tr></tr></thead><tbody></tbody></table>");
-            headerRow = table.find("thead").find("tr");
+            table = $(settings.templates.tableTemplate);
+            thead = table.find("thead");
+            headerRow = $("<tr>").appendTo(thead);
             tbody = table.find("tbody");
 
             $.each(settings.columnNames, function (index, columnName) {
                 var sortEnabled = settings.sortable[index];
-                var sortBlock;
                 var sortAscending;
                 var sortDescending;
                 var columnKey = settings.columnKeys[index];
-                headerCell = $("<th>");
-                if (settings.columnWidths.length > index) {
-                    headerCell.attr("width", settings.columnWidths[index]);
-                }
+                var width;
+
+                width = settings.columnWidths.length > index ?settings.columnWidths[index] : "";
 
                 if (sortEnabled) {
-                    sortBlock = $('<ul>').addClass("sort");
-                    sortAscending = $('<li>').addClass("sort-ascending").appendTo(sortBlock);
-                    sortDescending = $('<li>').addClass("sort-descending").appendTo(sortBlock);
-                    headerCell.append(sortBlock);
-                    $('<span>').html(columnName).appendTo(headerCell);
+                    headerCell = $(Mustache.render(settings.templates.sortableHeaderTemplate, {width:width, title:columnName}));
+                    sortAscending = headerCell.find(".sort-ascending");
+                    sortDescending = headerCell.find(".sort-descending");
 
                     function sort(event) {
                         event.preventDefault();
@@ -185,14 +169,15 @@
                     });
                 }
                 else {
-                    headerCell.html(columnName);
+                    headerCell = $(Mustache.render(settings.templates.headerTemplate, { width:width, title:columnName }));
                 }
                 headerRow.append(headerCell);
             });
 
             table.addClass(settings.tableClass);
 
-            buttonBar = $('<div><button class="btn">&laquo; Prev</button><button class="btn pull-right">Next &raquo</button></div>');
+            buttonBarHtml = settings.templates.buttonBarTemplate;
+            buttonBar = $(buttonBarHtml);
             previousButton = buttonBar.find('button').first();
             nextButton = buttonBar.find('button').last();
             previousButton.click(function (event) {
@@ -214,7 +199,6 @@
 
             $this.append(table);
             $this.append(buttonBar);
-            $this.append($('<div class="clearfix"></div>'));
             return this;
         });
     };
