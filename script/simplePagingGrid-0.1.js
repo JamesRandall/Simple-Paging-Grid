@@ -18,7 +18,7 @@
             sortable: [],
             sortOrder: "asc",
             initialSortColumn: null,
-            tableClass: "table",
+            tableClass: "table"
         }, options);
         
         settings.templates = templates;
