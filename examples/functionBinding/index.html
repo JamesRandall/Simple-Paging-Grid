@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Simple Paging Grid - Linking Example</title>
+    <title>Simple Paging Grid - Function Binding</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -20,17 +20,25 @@
       }
     </style>
     <script type="text/javascript" src="script/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="script/mustache.js"></script>
-    <script type="text/javascript" src="script/data.js"></script>
-    <script type="text/javascript" src="../../script/simplePagingGrid-0.2.min.js"></script>
+	<script type="text/javascript" src="script/mustache.js"></script>
+    <script type="text/javascript" src="../../script/simplePagingGrid-0.2.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+		        function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder) {
+		            return [
+		                { "OrderLineID": 1, "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+						{ "OrderLineID": 2, "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+						{ "OrderLineID": 3, "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+						{ "OrderLineID": 4, "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+						{ "OrderLineID": 5, "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }];
+		        };
+		    
 		        $("#exampleGrid").simplePagingGrid({
 		            columnNames: ["Name", "Price ($)", "Quantity"],
 		            columnKeys: ["Name", "Price", "Quantity"],
 		            columnWidths: ["50%", "25%", "25%"],
-		            cellTemplates:["<a href='orderLineView.html?id={{OrderLineID}}'>{{Name}}</a>", null, "{{Quantity}} units"],
-		            data: getData()
+		            dataFunction: getDataFunction,
+		            minimumVisibleRows: 5
 		        });
 		    });
 	</script>
@@ -41,7 +49,7 @@
             <div class="navbar navbar-fixed-top">
               <div class="navbar-inner">
                 <div class="container-fluid">
-                  <a class="brand" href="#">Simple Paging Grid - Hyperlink Example</a>
+                  <a class="brand" href="#">Simple Paging Grid - Function Binding Example</a>
                 </div>
               </div>
             </div>

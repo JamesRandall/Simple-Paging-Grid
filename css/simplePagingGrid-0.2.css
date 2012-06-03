@@ -37,3 +37,16 @@ li.sort-descending-active
 {
     border-color: #aaa transparent transparent transparent;
 }
+
+div.loading
+{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    border: 5px;
+    background-color: white;
+    background-image: url('load.gif');
+    background-repeat: no-repeat;
+    background-position: center;
+}

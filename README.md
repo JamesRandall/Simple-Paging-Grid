@@ -74,14 +74,18 @@ columnKeys      |An array of property names within the data block, one for each 
 columnNames     |An array of titles for the column headers
 columnWidths    |*(Optional)* The width of each column either absolute or percentages
 data            |If you're using a client side data model then the data in the form of an array of objects should be supplied via this property.
+dataFunction    |Data can be sourced from a function
 dataUrl         |If you want to fetch pages of data dynamically from a web server then the URL for the data source should be supplied via this property. See below.
+headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Mustache (see below).
 initialSortOrder|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
+minimumVisibleRows|*(Optional)* If the data source supplies less rows than this value then the grid is padded out with empty rows until a minimum number of rows are viewable. If set to the pageSize then this stops the grid from changing size during loading from a URL. Defaults to 10.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
+showLoadingOverlay|*(Optional)* If set to true then when data is being retrieved from a URL a loading overlay is shown. Defaults to true.
 sortable        |*(Optional)* An array of boolean values indicating if the grid can be sorted by the column. If unspecified then the grid is not sortable.
 tableClass      |*(Optional*) The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
 templates       |*(Optional*)The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
 
-## Dynamically Loading Data
+## Loading Data From A URL
 
 To fetch data dynamically from a web server as a user pages backwards and forwards then a URL needs supplying to the datagrid as shown below:
 
@@ -108,9 +112,34 @@ In response to this your server should return the JSON data for the page, for ex
 
 Note that if building SQL dynamically you should take care to protect from injection attacks and your server should enforce a maximum page size to prevent dangerously large pages of data being requested by an attacker.
 
+## Loading Data From A Function
+
+To load data from a function then a function should be supplied to the datagrid as shown below:
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            columnNames: ["Name", "Price ($)", "Quantity"],
+            columnKeys: ["Name", "Price", "Quantity"],
+            sortable: [true, true, true],
+            initialSortOrder: "Name",
+            dataFunction: getDataFunction
+        });
+    });
+
+The function will be passed the page number, page size, sort column and sort order in the same manner as URL data loading and should return an object structured in the same way:
+
+    function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder) {
+        return [
+		    { "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+			{ "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+			{ "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+			{ "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+			{ "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }];
+	};
+
 ## Cell Templates
 
-As indicated in the table above you can customize cell output by using Mustache to render your data - for example to include hyperlinks. You do this using the cellTemplates property which is an array of Mustache templates. The view model supplied to Mustache is the current row of data. Below is an example of using cell templates to include hyperlinks and the word "units" after the quantity..
+As indicated in the table above you can customize cell output by using Mustache to render your data - for example to include hyperlinks. You do this using the cellTemplates property which is an array of Mustache templates. The view model supplied to Mustache is the current row of data. Below is an example of using cell templates to include hyperlinks and the word "units" after the quantity.
 
     $(document).ready(function() {
         $("#exampleGrid").simplePagingGrid({
@@ -127,21 +156,43 @@ As indicated in the table above you can customize cell output by using Mustache 
 
 If a template is missing as shown by the null in the example above (or instead if the cell template array contains less elements than the number of column keys) then the default behaviour will be used for that cell - you only need to supply templates for those you do want to customise.
 
+## Header Templates
+
+Like cell templates you can customize header cell output by supplying your own HTML - for example maybe you want to include a "Select All" button above a column of check boxes as shown below:
+
+    $("#sourcegrid").simplePagingGrid({
+        columnNames: ["", "Name", "Age"],
+        columnKeys: ["ProductID", "DisplayName", "Quantity"],
+        cellTemplates: [
+            "<input type='checkbox' name='p{{ProductID}}' id='p{{ProductID}}' class='add-product-selector'>",
+            "<a href='Product/{{ProductID}}'>{{DisplayName}}</a>"
+        ],
+        headerTemplates: [
+            '<th width="75"><button class="btn btn-mini" id="addselectall">Select All</button></th>'
+        ],
+        sortable: [ false, true, true],
+        initialSortOrder: "DisplayName",
+        dataUrl: "Product/All"
+    });
+
 ## Grid Component Templates
 
-The grid is made up of four structural components:
+The grid is made up of a number of structural components:
 
 * The table as a whole
 * Unsortable column headers within the table
-* Sortable column headers
+* Column headers (sortable and non sortable)
 * The button bar (contains the next and previous page buttons)
+* A loading overlay
 
 You can override these to style things differently by using the templates option. This option contains four sub-options:
 
 **Option**            |**Description**
 ----------------------|----------------
 buttonBarTemplate     |The button bar
+emptyCellTemplate     |Template used when padding the grid with empty rows
 headerTemplate        |An unsortable header
+loadingOverlayTemplate|The loading overlay
 sortableHeaderTemplate|A sortable header
 table                 |The containing table
 
@@ -173,6 +224,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
+03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
 
