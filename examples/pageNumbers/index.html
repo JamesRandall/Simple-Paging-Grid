@@ -28,7 +28,12 @@
 		        var rowNumber;
 		        var numberOfRows = 350;
 		        for(rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
-		            rows.push({ "OrderLineID": rowNumber, "Name": "Product " + rowNumber, "Price": Math.floor(Math.random() * 100), "Quantity": Math.floor(Math.random() * 100) });
+		            rows.push({
+		                "OrderLineID": rowNumber,
+		                "Name": "Product " + rowNumber,
+		                "Price": Math.floor(Math.random() * 100),
+		                "Quantity": Math.floor(Math.random() * 100)
+		            });
 		        }
 		        
             	$("#exampleGrid").simplePagingGrid({
@@ -38,7 +43,7 @@
 		            data: {
 		                currentPage: rows,
 		                totalRows: rows.length
-	                }
+                    }
 		        });
 		    });
 	</script>
