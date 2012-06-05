@@ -54,6 +54,10 @@
             var loadingOverlay = null;
             var gridElement = this;
             var $this = $(this);
+            
+            function numberOfPages() {
+                return Math.floor(numberOfRows / settings.pageSize);
+            }
 
             function configureButtons() {
                 if (fetchingData) {
@@ -67,8 +71,9 @@
                     else {
                         previousButton.removeAttr('disabled');
                     }
-
-                    if (pageData.length < settings.pageSize) {
+                    
+                    if ((numberOfRows === null && pageData.length < settings.pageSize) ||
+                        (numberOfRows !== null && currentPage >= (numberOfPages()-1))) {
                         nextButton.attr('disabled', 'disabled');
                     }
                     else {
@@ -88,7 +93,7 @@
                 if (settings.showPageNumbers && numberOfRows !== null) {
                     var firstPage;
                     var lastPage;
-                    var totalPages = Math.floor(numberOfRows / settings.pageSize);
+                    var totalPages = numberOfPages();
                     var pages = [];
                     var index;
                     var pageNumberElement;
@@ -104,8 +109,9 @@
                     else
                     {
                         lastPage = (currentPage+1) + settings.numberOfPageLinks/2 - 1;
-                        if (lastPage > settings.numberOfPageLinks) {
-                            firstPage = lastPage - settings.numberOfPageLinks;
+                        if (lastPage > totalPages) {
+                            lastPage = totalPages;
+                            firstPage = lastPage - settings.numberOfPageLinks + 1;
                             if (firstPage < 1) firstPage=1;
                         }
                     }
@@ -170,7 +176,7 @@
                 
                 if (settings.data !== null) {
                     if ($.isArray(settings.data)) {
-                        dataToSort = sourceData;
+                        dataToSort = settings.data;
                     }
                     else if ($.isPlainObject(settings.data)) {
                         dataToSort = settings.data.currentPage;
