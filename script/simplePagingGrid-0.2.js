@@ -78,12 +78,20 @@
             }
             
             function configurePageNumbers() {
+                function createPageNumberClickHandler(pageNumber) {
+                    return function(ev) {
+                        ev.preventDefault();
+                        currentPage = pageNumber-1;
+                        refreshData();
+                    };
+                }
                 if (settings.showPageNumbers && numberOfRows !== null) {
                     var firstPage;
                     var lastPage;
                     var totalPages = numberOfRows % settings.pageSize + 1;
                     var pages = [];
                     var index;
+                    var pageNumberElement;
                     
                     firstPage = currentPage - settings.numberOfPageLinks/2;
                     if (firstPage < 1) {
@@ -106,11 +114,13 @@
                     pageNumberContainer.empty();
                     for (index = firstPage; index <= lastPage; index++) {
                         if (index === (currentPage+1)) {
-                            pageNumberContainer.append(Mustache.render(settings.templates.currentPageTemplate, { pageNumber: index} ));
+                            pageNumberElement= $(Mustache.render(settings.templates.currentPageTemplate, { pageNumber: index} ))
                         }
                         else {
-                            pageNumberContainer.append(Mustache.render(settings.templates.pageLinkTemplate, { pageNumber: index} ));
+                            pageNumberElement = $(Mustache.render(settings.templates.pageLinkTemplate, { pageNumber: index} ));
+                            pageNumberElement.click(createPageNumberClickHandler(index));
                         }
+                        pageNumberContainer.append(pageNumberElement);
                     }                    
                 }
             }
