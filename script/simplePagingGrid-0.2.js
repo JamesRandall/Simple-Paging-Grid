@@ -30,7 +30,7 @@
             minimumVisibleRows: 10,
             showLoadingOverlay: true,
             showPageNumbers: true,
-            numberOfPageLinks: 10
+            numberOfPageLinks: 20
         }, options);
         
         settings.templates = templates;
@@ -56,7 +56,7 @@
             var $this = $(this);
             
             function numberOfPages() {
-                return Math.floor(numberOfRows / settings.pageSize);
+                return Math.ceil(numberOfRows / settings.pageSize);
             }
 
             function configureButtons() {
@@ -101,7 +101,7 @@
                     firstPage = (currentPage+1) - settings.numberOfPageLinks/2;
                     if (firstPage < 1) {
                         firstPage = 1;
-                        lastPage = 10;
+                        lastPage = settings.numberOfPageLinks;
                         if (lastPage > totalPages) {
                             lastPage = totalPages;
                         }

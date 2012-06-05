@@ -79,11 +79,67 @@ dataUrl         |If you want to fetch pages of data dynamically from a web serve
 headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Mustache (see below).
 initialSortOrder|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
 minimumVisibleRows|*(Optional)* If the data source supplies less rows than this value then the grid is padded out with empty rows until a minimum number of rows are viewable. If set to the pageSize then this stops the grid from changing size during loading from a URL. Defaults to 10.
+numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum number of page links to show. Defaults to 10.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
 showLoadingOverlay|*(Optional)* If set to true then when data is being retrieved from a URL a loading overlay is shown. Defaults to true.
+showPageNumbers |*(Optional)* If this is set to true and the grid is populated with an object that supplies the total number of rows (see below) then quick links to specific page numbers are shown in the button bar.
 sortable        |*(Optional)* An array of boolean values indicating if the grid can be sorted by the column. If unspecified then the grid is not sortable.
 tableClass      |*(Optional*) The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
 templates       |*(Optional*)The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
+
+## Loading Data Into The Grid
+
+Data can be loaded into the grid in three different ways:
+
+* Directly to an object constructed in the client
+* To a JSON object retrieved via a remote service
+* To an object returned from a function
+
+Details, and examples, of how to use these options are shown below.
+
+The object supplied to the grid by these mechanisms can be either a simple array or an object with additional information that allows the simple paging grid to provide an improved user experience.
+
+### Simple Array Format
+
+When binding to an array the array should simply contain a set of objects with the rows and properties to be displayed. For example:
+
+    [
+		{ "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+		{ "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+		{ "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+		{ "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+		{ "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }
+	]
+
+### Object Format
+
+When the data is wrapped within an outer object the grid is able to make use of the additional information to support functionality related to the total amount of data available - specifically page links. This object takes the following format:
+
+    {
+		currentPage: [
+		    { "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+            { "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+		    { "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+		    { "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+		    { "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }
+		],
+		totalRows: rows.length
+	}
+
+## Loading Data From A Client Object
+
+Loading data from a client object has already been shown in the initial example. Simply supply either an array or an object (see above) to the data property of the grid:
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            columnNames: ["Name", "Price ($)", "Quantity"],
+            columnKeys: ["Name", "Price", "Quantity"],
+            data: [
+                { "Name": "Pineapple", "Price": 1.50, "Quantity": 2 },
+                { "Name": "Banana", "Price": 0.30, "Quantity": 5 }]
+        });
+    });
+
 
 ## Loading Data From A URL
 
