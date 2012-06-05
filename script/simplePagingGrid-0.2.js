@@ -5,12 +5,14 @@
 
     $.fn.simplePagingGrid = function (options) {
         var templates = $.extend({
-            buttonBarTemplate: '<div><button class="btn">&laquo; Prev</button><button class="btn pull-right">Next &raquo</button></div><div class="clearfix"></div>',
+            buttonBarTemplate: '<div><button class="btn pull-left">&laquo; Prev</button><button class="btn pull-right">Next &raquo</button><div class="page-numbers"></div><div class="clearfix"></div>',
             tableTemplate: '<table><thead></thead><tbody></tbody></table>',
             headerTemplate: '<th width="{{width}}">{{title}}</th>',
             sortableHeaderTemplate: '<th width="{{width}}"><ul class="sort"><li class="sort-ascending"/><li class="sort-descending"/></ul>{{title}}</th>',
             emptyCellTemplate: '<td>&nbsp;</td>',
-            loadingOverlayTemplate: '<div class="loading"></div>'
+            loadingOverlayTemplate: '<div class="loading"></div>',
+            currentPageTemplate: '<span class="page-number">{{pageNumber}}</span>',
+            pageLinkTemplate: '<a class="page-number" href="#">{{pageNumber}}</a>'
         }, options.templates);
         
         var settings = $.extend({
@@ -26,7 +28,9 @@
             dataUrl: null,
             data: null,
             minimumVisibleRows: 10,
-            showLoadingOverlay: true
+            showLoadingOverlay: true,
+            showPageNumbers: true,
+            numberOfPageLinks: 10
         }, options);
         
         settings.templates = templates;
@@ -42,11 +46,13 @@
             var previousButton;
             var nextButton;
             var pageData;
+            var numberOfRows = null;
             var fetchingData = false;
             var sortOrder = settings.sortOrder;
             var sortedColumn = settings.initialSortColumn;
             var sortElement = null;
             var loadingOverlay = null;
+            var gridElement = this;
             var $this = $(this);
 
             function configureButtons() {
@@ -71,6 +77,44 @@
                 }
             }
             
+            function configurePageNumbers() {
+                if (settings.showPageNumbers && numberOfRows !== null) {
+                    var firstPage;
+                    var lastPage;
+                    var totalPages = numberOfRows % settings.pageSize + 1;
+                    var pages = [];
+                    var index;
+                    
+                    firstPage = currentPage - settings.numberOfPageLinks/2;
+                    if (firstPage < 1) {
+                        firstPage = 1;
+                        lastPage = 10;
+                        if (lastPage > totalPages) {
+                            lastPage = totalPages;
+                        }
+                    }
+                    else
+                    {
+                        lastPage = currentPage + settings.numberOfPageLinks/2;
+                        if (lastPage > settings.numberOfPageLinks) {
+                            firstPage = lastPage - settings.numberOfPageLinks;
+                            if (firstPage < 1) firstPage=1;
+                        }
+                    }
+                    
+                    var pageNumberContainer = buttonBar.find(".page-numbers");
+                    pageNumberContainer.empty();
+                    for (index = firstPage; index <= lastPage; index++) {
+                        if (index === (currentPage+1)) {
+                            pageNumberContainer.append(Mustache.render(settings.templates.currentPageTemplate, { pageNumber: index} ));
+                        }
+                        else {
+                            pageNumberContainer.append(Mustache.render(settings.templates.pageLinkTemplate, { pageNumber: index} ));
+                        }
+                    }                    
+                }
+            }
+            
             function sizeLoadingOverlay() {
                 if (loadingOverlay != null) {
                     loadingOverlay.width($this.width());
@@ -92,19 +136,37 @@
                     loadingOverlay = null;
                 }
             }
+            
+            function getPageDataFromSource(sourceData) {
+                if ($.isArray(sourceData)) {
+                    pageData = sourceData;
+                }
+                else if ($.isPlainObject(sourceData)) {
+                    pageData = sourceData.currentPage;
+                    numberOfRows = sourceData.totalRows;
+                }
+            }
 
             function refreshData(newDataUrl) {
                 var sortedData;
                 var aVal;
                 var bVal;
+                var dataToSort;
                 
                 if (newDataUrl !== undefined) {
                     settings.dataUrl = newDataUrl;
                     currentPage = 0;
                 }
                 
-                if (settings.data !== null) { 
-                    sortedData = sortedColumn === null ? settings.data : settings.data.sort(function(a, b) {
+                if (settings.data !== null) {
+                    if ($.isArray(settings.data)) {
+                        dataToSort = sourceData;
+                    }
+                    else if ($.isPlainObject(settings.data)) {
+                        dataToSort = settings.data.currentPage;
+                        numberOfRows = settings.data.totalRows;
+                    }
+                    sortedData = sortedColumn === null ? dataToSort : dataToSort.sort(function(a, b) {
 	                    aVal = sortOrder === "asc" ? a[sortedColumn] : b[sortedColumn];
                         bVal = sortOrder === "asc" ? b[sortedColumn] : a[sortedColumn];
                         if ($.isNumeric(aVal)) {
@@ -119,25 +181,31 @@
                         return aVal.localeCompare(bVal);
                     });
                     pageData = dataPage(sortedData, currentPage, settings.pageSize);
+                    gridElement.currentData = pageData;
                     loadData();
                     configureButtons();
+                    configurePageNumbers();
                 }
                 else if (settings.dataUrl !== null) {
                     fetchingData = true;
                     configureButtons();
                     showLoading();
                     $.getJSON(settings.dataUrl, { page: currentPage, pageSize: settings.pageSize, sortColumn: sortedColumn, sortOrder: sortOrder }, function (jsonData) {
-                        pageData = jsonData;
+                        getPageDataFromSource(jsonData);
+                        gridElement.currentData = pageData;
                         loadData();
                         fetchingData = false;
                         configureButtons();
+                        configurePageNumbers();
                         hideLoading();
                     });
                 }
                 else if (settings.dataFunction !== null) {
-                    pageData = settings.dataFunction(currentPage, settings.pageSize, sortedColumn, sortOrder);
+                    getPageDataFromSource(settings.dataFunction(currentPage, settings.pageSize, sortedColumn, sortOrder));
+                    gridElement.currentData = pageData;
                     loadData();
                     configureButtons();
+                    configurePageNumbers();
                 }
             }
 
@@ -253,7 +321,7 @@
             $this.append(table);
             $this.append(buttonBar);
             $(window).resize(sizeLoadingOverlay);
-            this.refreshData = refreshData;
+            gridElement.refreshData = refreshData;
             return this;
         });
     };
