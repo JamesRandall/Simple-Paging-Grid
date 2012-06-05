@@ -88,12 +88,12 @@
                 if (settings.showPageNumbers && numberOfRows !== null) {
                     var firstPage;
                     var lastPage;
-                    var totalPages = numberOfRows % settings.pageSize + 1;
+                    var totalPages = Math.floor(numberOfRows / settings.pageSize);
                     var pages = [];
                     var index;
                     var pageNumberElement;
                     
-                    firstPage = currentPage - settings.numberOfPageLinks/2;
+                    firstPage = (currentPage+1) - settings.numberOfPageLinks/2;
                     if (firstPage < 1) {
                         firstPage = 1;
                         lastPage = 10;
@@ -103,7 +103,7 @@
                     }
                     else
                     {
-                        lastPage = currentPage + settings.numberOfPageLinks/2;
+                        lastPage = (currentPage+1) + settings.numberOfPageLinks/2 - 1;
                         if (lastPage > settings.numberOfPageLinks) {
                             firstPage = lastPage - settings.numberOfPageLinks;
                             if (firstPage < 1) firstPage=1;
