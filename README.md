@@ -5,18 +5,18 @@ Simple Paging Grid is a lightweight CSS friendly readonly grid that supports bot
 ![Screenshot]
 (http://www.accidentalfish.com/simple-paging-grid-screenshot.png)
 
-It's built as a jQuery plugin and has been developed and tested against version 1.7.1. The latest version also uses Mustache to provide custom templating. These and the accompanying licenses can be found at:
+It's built as a jQuery plugin and has been developed and tested against version 1.7.1. The latest version also uses Handlebars to provide custom templating. These and the accompanying licenses can be found at:
 
 <http://jquery.com/>
 
-<https://github.com/janl/mustache.js>
+<https://github.com/wycats/handlebars.js/blob/master/LICENSE>
 
 
 This is an early set of code spun out of a not for profit website that is under construction, bug reports and feature requests are welcome.
 
 The Simple Paging Grid is covered by the MIT license (see the bottom of this readme and also the LICENSE file) so you can largely use it as you like in both commercial and non-commercial projects. Though if you do use it please consider dropping me an email with feedback: it's always nice to know when and where your code is in use.
 
-Finally - thanks to the authors of jQuery, Mustache and Twitter Bootstrap all of which are invaluable libraries.
+Finally - thanks to the authors of jQuery, Handlebars and Twitter Bootstrap all of which are invaluable libraries.
 
 ## Demos
 
@@ -35,17 +35,17 @@ Include the stylesheet simplePagingGrid.css (all this includes are the triangle 
 
     <link rel="stylesheet" href="/css/simplePagingGrid.css">
 
-Include jQuery, Mustache and the Simple Paging Grid script:
+Include jQuery, Handlebars and the Simple Paging Grid script:
 
     <script src="/script/jquery-1.7.1.min.js" type="text/javascript">
-    <script src="/script/mustache.js" type="text/javascript">
+    <script src="/script/handlebars.js" type="text/javascript">
     <script src="/script/simplePagingGrid-0.1.min.js" type="text/javascript">
 
-Note that jQuery and Mustache can be found at:
+Note that jQuery and Handlebars can be found at:
 
 <http://jquery.com/>
 
-<https://github.com/janl/mustache.js>
+<http://handlebarsjs.com/>
 
 Create a place holder tag in your HTML page
 
@@ -63,20 +63,22 @@ In your document ready event handler configure your grid
         });
     });
 
+For Visual Studio users Simple Paging Grid is also available as a NuGet package (<http://nuget.org/packages/SimplePagingGrid>) which will download the dependencies for you.
+
 ## Options
 
 Like many jQuery plugins the Simple Paging Grid is configured using an options dictionary as can be seen above. Option keys include:
 
 **Option**      |**Description**
 ----------------|-----------------------------------------
-cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Mustache (see below).
+cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Handlebars (see below).
 columnKeys      |An array of property names within the data block, one for each column
 columnNames     |An array of titles for the column headers
 columnWidths    |*(Optional)* The width of each column either absolute or percentages
 data            |If you're using a client side data model then the data in the form of an array of objects should be supplied via this property.
 dataFunction    |Data can be sourced from a function
 dataUrl         |If you want to fetch pages of data dynamically from a web server then the URL for the data source should be supplied via this property. See below.
-headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Mustache (see below).
+headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Handlebars (see below).
 initialSortColumn|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
 minimumVisibleRows|*(Optional)* If the data source supplies less rows than this value then the grid is padded out with empty rows until a minimum number of rows are viewable. If set to the pageSize then this stops the grid from changing size during loading from a URL. Defaults to 10.
 numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum number of page links to show. Defaults to 10.
@@ -195,7 +197,7 @@ The function will be passed the page number, page size, sort column and sort ord
 
 ## Cell Templates
 
-As indicated in the table above you can customize cell output by using Mustache to render your data - for example to include hyperlinks. You do this using the cellTemplates property which is an array of Mustache templates. The view model supplied to Mustache is the current row of data. Below is an example of using cell templates to include hyperlinks and the word "units" after the quantity.
+As indicated in the table above you can customize cell output by using Handlebars to render your data - for example to include hyperlinks. You do this using the cellTemplates property which is an array of Handlebars templates. The view model supplied to Handlebars is the current row of data. Below is an example of using cell templates to include hyperlinks and the word "units" after the quantity.
 
     $(document).ready(function() {
         $("#exampleGrid").simplePagingGrid({
@@ -211,6 +213,8 @@ As indicated in the table above you can customize cell output by using Mustache 
     });
 
 If a template is missing as shown by the null in the example above (or instead if the cell template array contains less elements than the number of column keys) then the default behaviour will be used for that cell - you only need to supply templates for those you do want to customise.
+
+If you want to format data within the template (for example to convert a JSON date to a localised human friendly date) then a good way to do this is to register helpers with Handlebars. For more details see the Handlebars documentation here: <http://handlebarsjs.com/>
 
 ## Header Templates
 
@@ -280,6 +284,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
+08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
