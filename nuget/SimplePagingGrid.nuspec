@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SimplePagingGrid</id>
+    <version>0.3.0.0</version>
+    <title>Simple Paging Grid</title>
+    <authors>James Randall</authors>
+    <owners>James Randall</owners>
+    <licenseUrl>https://raw.github.com/JamesRandall/Simple-Paging-Grid/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/JamesRandall/Simple-Paging-Grid</projectUrl>
+    <iconUrl>http://www.accidentalfish.com/simplePagingGridIcon.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>CSS friendly JavaScript grid built as a jQuery plugin and making use of the Handlebars templating library</description>
+    <releaseNotes>First NuGet package</releaseNotes>
+    <copyright>Copyright 2012 Accidental Fish Ltd.</copyright>
+    <tags>grid jquery javascript handlebars</tags>
+    <dependencies>
+      <dependency id="Handlebars.js" version="1.0.7" />
+      <dependency id="jQuery" version="1.7.2" />
+    </dependencies>
+  </metadata>
+</package>
