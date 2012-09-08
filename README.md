@@ -77,7 +77,7 @@ data            |If you're using a client side data model then the data in the f
 dataFunction    |Data can be sourced from a function
 dataUrl         |If you want to fetch pages of data dynamically from a web server then the URL for the data source should be supplied via this property. See below.
 headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Mustache (see below).
-initialSortOrder|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
+initialSortColumn|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
 minimumVisibleRows|*(Optional)* If the data source supplies less rows than this value then the grid is padded out with empty rows until a minimum number of rows are viewable. If set to the pageSize then this stops the grid from changing size during loading from a URL. Defaults to 10.
 numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum number of page links to show. Defaults to 10.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
