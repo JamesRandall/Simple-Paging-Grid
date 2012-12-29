@@ -279,15 +279,23 @@ The examples folder in the repository and download package contains a number of 
 * Customisable cells
 * Coming soon: example ASP.Net MVC3 project containing a grid loading dynamic data from the server
 
-
 ## Release History
 
 Date       |Version |Changes
 -----------|--------|--------
+29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
+
+## Breaking Changes 0.3 to 0.4
+
+There have been a number of changes between 0.3 and 0.4 that could cause issues if you are using your own templates. The currentPageTemplate and pageLinkTemplates have been removed and rolled into the buttonBarTemplate to allow for better styling of the overall button bar.
+
+Along with this the old CSS classes for page numbers have been replaced with the bootstrap classes.
+
+If you're using the grid with no custom styles other than a change to the look and feel then you shoulnd't need to change anything to upgrade.
 
 ## License
 
