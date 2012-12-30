@@ -55,12 +55,3 @@ div.loading
     background-position: center;
 }
 
-.page-numbers  {
-    text-align: center;
-    min-width: 100%;
-}
-
-.page-number {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-}

@@ -3,40 +3,46 @@
         return data.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
     }
 
-    var bbt = '<div style="text-align: center;"> \
-            {{#if isFirstPage}} \
-                <button class="btn pull-left first" disabled="disabled">&laquo; First</button> \
-                <button class="btn pull-left previous" disabled="disabled">&laquo; Prev</button> \
-            {{/if}} \
-            {{#unless isFirstPage}} \
-                <button class="btn pull-left first">&laquo; First</button> \
-                <button class="btn pull-left previous">&laquo; Prev</button> \
-            {{/unless}} \
-            {{#if isLastPage}} \
-                <button class="btn pull-right last" disabled="disabled">Last &raquo</button> \
-                <button class="btn pull-right next" disabled="disabled">Next &raquo</button> \
-            {{/if}} \
-            {{#unless isLastPage}} \
-                <button class="btn pull-right last">Last &raquo</button> \
-                <button class="btn pull-right next">Next &raquo</button> \
-            {{/unless}} \
-            <div class="pagination"> \
-                <ul> \
-                    {{#each pages}} \
-                        {{#if isCurrentPage}} \
-                            <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
-                        {{/if}} \
-                        {{#unless isCurrentPage}} \
-                            <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
-                        {{/unless}} \
-                    {{/each}} \
-                </ul> \
-            </div> \
-        </div>';
-
     $.fn.simplePagingGrid = function (options) {
         var templates = $.extend({
-            buttonBarTemplate: bbt, //'<div><button class="btn pull-left first">&laquo; First</button><button class="btn pull-left previous">&laquo; Prev</button><button class="btn pull-right last">Last &raquo</button><button class="btn pull-right next">Next &raquo</button><div class="pagination"><ul></ul></div><div class="clearfix"></div>',
+            buttonBarTemplate: '<div class="pagination pull-right" style="margin-top: 0px"> \
+                                    <ul> \
+                                        {{#if isFirstPage}} \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="first"><i class="icon-fast-backward" style="opacity: 0.5"></i></a></li> \
+                                            {{/if}} \
+                                            <li><a href="#" class="previous"><i class="icon-step-backward" style="opacity: 0.5"></i></a></li> \
+                                        {{/if}} \
+                                        {{#unless isFirstPage}} \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="first"><i class="icon-fast-backward"></i></a></li> \
+                                            {{/if}} \
+                                            <li><a href="#" class="previous"><i class="icon-step-backward"></i></a></li> \
+                                        {{/unless}} \
+                                        {{#if pageNumbersEnabled}} \
+                                            {{#each pages}} \
+                                                {{#if isCurrentPage}} \
+                                                    <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                                {{/if}} \
+                                                {{#unless isCurrentPage}} \
+                                                    <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                                {{/unless}} \
+                                            {{/each}} \
+                                        {{/if}} \
+                                        {{#if isLastPage}} \
+                                            <li><a href="#" class="next"><i class="icon-step-forward" style="opacity: 0.5"></i></a></li> \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="last"><i class="icon-fast-forward" style="opacity: 0.5"></i></a></li> \
+                                            {{/if}} \
+                                        {{/if}} \
+                                        {{#unless isLastPage}} \
+                                            <li><a href="#" class="next"><i class="icon-step-forward"></i></a></li> \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="last"><i class="icon-fast-forward"></i></a></li> \
+                                            {{/if}} \
+                                        {{/unless}} \
+                                    </ul> \
+                                </div>',
             tableTemplate: '<table><thead></thead><tbody></tbody></table>',
             headerTemplate: '<th width="{{width}}">{{title}}</th>',
             sortableHeaderTemplate: '<th width="{{width}}"><div class="sort-container"><ul class="sort"><li class="sort-ascending"/><li class="sort-descending"/></ul>{{title}}</div></th>',
@@ -180,96 +186,94 @@
 
             function buildButtonBar() {
                 var previousButtonBar = buttonBar;
-                //if (numberOfRows !== null) {
-                    var totalPages = numberOfPages();
-                    var pageRange = getPageRange();
-                    var pageIndex;
-                    var hadFocus = false;
+                var totalPages = numberOfPages();
+                var pageRange = getPageRange();
+                var pageIndex;
+                var hadFocus = false;
 
-                    if (pageTextPicker !== undefined) {
-                        hadFocus = pageTextPicker.is(":focus");
-                    }
+                if (pageTextPicker !== undefined) {
+                    hadFocus = pageTextPicker.is(":focus");
+                }
 
-                    var paginationModel = {
-                        isFirstPage: currentPage == 0,
-                        isLastPage: currentPage == totalPages - 1,
-                        currentPage: currentPage + 1,
-                        totalPages: totalPages,
-                        pages: []
-                    };
-                    for (pageIndex = pageRange.firstPage; pageIndex <= pageRange.lastPage; pageIndex++) {
-                        paginationModel.pages.push({ pageNumber: pageIndex - 1, displayPageNumber: pageIndex, isCurrentPage: (pageIndex - 1) == currentPage });
-                    }
-                    buttonBarHtml = settings.templates.buttonBarTemplate(paginationModel);
-                    buttonBar = $(buttonBarHtml);
-                    firstButton = buttonBar.find('.first');
-                    previousButton = buttonBar.find('.previous');
-                    nextButton = buttonBar.find('.next');
-                    lastButton = buttonBar.find('.last');
-                    pageTextPicker = buttonBar.find(".pagetextpicker");
+                var paginationModel = {
+                    pageNumbersEnabled: numberOfRows !== null,
+                    isFirstPage: currentPage == 0,
+                    isLastPage: numberOfRows !== null ? currentPage == totalPages - 1 : pageData !== undefined && pageData.length < settings.pageSize,
+                    currentPage: currentPage + 1,
+                    totalPages: totalPages,
+                    pages: []
+                };
+                for (pageIndex = pageRange.firstPage; pageIndex <= pageRange.lastPage; pageIndex++) {
+                    paginationModel.pages.push({ pageNumber: pageIndex - 1, displayPageNumber: pageIndex, isCurrentPage: (pageIndex - 1) == currentPage });
+                }
+                buttonBarHtml = settings.templates.buttonBarTemplate(paginationModel);
+                buttonBar = $(buttonBarHtml);
+                firstButton = buttonBar.find('.first');
+                previousButton = buttonBar.find('.previous');
+                nextButton = buttonBar.find('.next');
+                lastButton = buttonBar.find('.last');
+                pageTextPicker = buttonBar.find(".pagetextpicker");
 
-                    previousButton.click(function (event) {
-                        event.preventDefault();
-                        if (currentPage > 0) {
-                            currentPage--;
-                            refreshData();
-                        }
-                    });
-                    nextButton.click(function (event) {
-                        event.preventDefault();
-                        if (currentPage < (totalPages - 1)) {
-                            currentPage++;
-                            refreshData();
-                        }
-                    });
-
-                    if (numberOfRows === null) {
-                        firstButton.remove();
-                        lastButton.remove();
-                    } else {
-                        firstButton.click(function (event) {
-                            event.preventDefault();
-                            if (currentPage > 0) {
-                                currentPage = 0;
-                                refreshData();
-                            }
-                        });
-
-                        lastButton.click(function (event) {
-                            event.preventDefault();
-                            if (currentPage < (totalPages - 1)) {
-                                currentPage = totalPages - 1;
-                                refreshData();
-                            }
-                        });
-                    }
-
-                    buttonBar.find('.pagenumber').click(function (ev) {
-                        var source = $(ev.target);
-                        ev.preventDefault();
-                        currentPage = 1 * source.data("pagenumber");
+                previousButton.click(function (event) {
+                    event.preventDefault();
+                    if (!paginationModel.isFirstPage) {
+                        currentPage--;
                         refreshData();
-                    });
+                    }
+                });
+                nextButton.click(function (event) {
+                    event.preventDefault();
+                    if (!paginationModel.isLastPage) {
+                        currentPage++;
+                        refreshData();
+                    }
+                });
 
-                    pageTextPicker.keydown(function (ev) {
-                        var code = (ev.keyCode ? ev.keyCode : ev.which);
-                        if (code == 13) {
-                            var value = pageTextPicker.val();
-                            if ($.isNumeric(value)) {
-                                currentPage = 1 * value - 1;
-                                if (currentPage < 0) {
-                                    currentPage = 0;
-                                }
-                                if (currentPage > (totalPages - 1)) {
-                                    currentPage = totalPages - 1;
-                                }
-                                refreshData();
-                            }
+                if (numberOfRows === null) {
+                    firstButton.remove();
+                    lastButton.remove();
+                } else {
+                    firstButton.click(function (event) {
+                        event.preventDefault();
+                        if (!paginationModel.isFirstPage) {
+                            currentPage = 0;
+                            refreshData();
                         }
                     });
-                /*} else {
-                    buttonBar = $("<div>");
-                }*/
+
+                    lastButton.click(function (event) {
+                        event.preventDefault();
+                        if (!paginationModel.isLastPage) {
+                            currentPage = totalPages - 1;
+                            refreshData();
+                        }
+                    });
+                }
+
+                buttonBar.find('.pagenumber').click(function (ev) {
+                    var source = $(ev.target);
+                    ev.preventDefault();
+                    currentPage = 1 * source.data("pagenumber");
+                    refreshData();
+                });
+
+                pageTextPicker.keydown(function (ev) {
+                    var code = (ev.keyCode ? ev.keyCode : ev.which);
+                    if (code == 13) {
+                        var value = pageTextPicker.val();
+                        if ($.isNumeric(value)) {
+                            currentPage = 1 * value - 1;
+                            if (currentPage < 0) {
+                                currentPage = 0;
+                            }
+                            if (currentPage > (totalPages - 1)) {
+                                currentPage = totalPages - 1;
+                            }
+                            refreshData();
+                        }
+                    }
+                });
+                
 
                 if (previousButtonBar !== undefined) {
                     previousButtonBar.replaceWith(buttonBar);
