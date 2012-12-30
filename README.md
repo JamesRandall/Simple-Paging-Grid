@@ -291,9 +291,9 @@ Date       |Version |Changes
 
 ## Breaking Changes 0.3 to 0.4
 
-There have been a number of changes between 0.3 and 0.4 that could cause issues if you are using your own templates. The currentPageTemplate and pageLinkTemplates have been removed and rolled into the buttonBarTemplate to allow for better styling of the overall button bar.
+There have been a number of changes between 0.3 and 0.4 that could cause issues if you are using your own templates. The currentPageTemplate and pageLinkTemplates have been removed and rolled into the buttonBarTemplate to allow for better styling of the overall button bar. Along with this the old CSS classes for page numbers have been replaced with the bootstrap classes.
 
-Along with this the old CSS classes for page numbers have been replaced with the bootstrap classes.
+Additionally there was an undocumented template and option called pageOptionsBar in 0.3 which has been removed. The template has been wrapped into the new buttonBarTemplate and the option renamed to showGotoPage
 
 If you're using the grid with no custom styles other than a change to the look and feel then you shoulnd't need to change anything to upgrade.
 

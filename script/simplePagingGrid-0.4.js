@@ -5,43 +5,53 @@
 
     $.fn.simplePagingGrid = function (options) {
         var templates = $.extend({
-            buttonBarTemplate: '<div class="pagination pull-right" style="margin-top: 0px"> \
-                                    <ul> \
-                                        {{#if isFirstPage}} \
-                                            {{#if pageNumbersEnabled}} \
-                                                <li><a href="#" class="first"><i class="icon-fast-backward" style="opacity: 0.5"></i></a></li> \
-                                            {{/if}} \
-                                            <li><a href="#" class="previous"><i class="icon-step-backward" style="opacity: 0.5"></i></a></li> \
-                                        {{/if}} \
-                                        {{#unless isFirstPage}} \
-                                            {{#if pageNumbersEnabled}} \
-                                                <li><a href="#" class="first"><i class="icon-fast-backward"></i></a></li> \
-                                            {{/if}} \
-                                            <li><a href="#" class="previous"><i class="icon-step-backward"></i></a></li> \
-                                        {{/unless}} \
-                                        {{#if pageNumbersEnabled}} \
-                                            {{#each pages}} \
-                                                {{#if isCurrentPage}} \
-                                                    <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+            buttonBarTemplate: '<div> \
+                                    {{#if showGotoPage}} \
+                                        <div class="pull-right"  style="padding-left: 1em;"> \
+                                            <div class="input-append" > \
+                                                    <input style="width: 3em;" type="text" value="{{currentPage}}" /> \
+                                                    <button class="btn" type="button">Go</button> \
+                                            </div> \
+                                        </div> \
+                                    {{/if}} \
+                                    <div class="pagination pull-right" style="margin-top: 0px"> \
+                                        <ul> \
+                                            {{#if isFirstPage}} \
+                                                {{#if pageNumbersEnabled}} \
+                                                    <li><a href="#" class="first"><i class="icon-fast-backward" style="opacity: 0.5"></i></a></li> \
                                                 {{/if}} \
-                                                {{#unless isCurrentPage}} \
-                                                    <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
-                                                {{/unless}} \
-                                            {{/each}} \
-                                        {{/if}} \
-                                        {{#if isLastPage}} \
-                                            <li><a href="#" class="next"><i class="icon-step-forward" style="opacity: 0.5"></i></a></li> \
-                                            {{#if pageNumbersEnabled}} \
-                                                <li><a href="#" class="last"><i class="icon-fast-forward" style="opacity: 0.5"></i></a></li> \
+                                                <li><a href="#" class="previous"><i class="icon-step-backward" style="opacity: 0.5"></i></a></li> \
                                             {{/if}} \
-                                        {{/if}} \
-                                        {{#unless isLastPage}} \
-                                            <li><a href="#" class="next"><i class="icon-step-forward"></i></a></li> \
+                                            {{#unless isFirstPage}} \
+                                                {{#if pageNumbersEnabled}} \
+                                                    <li><a href="#" class="first"><i class="icon-fast-backward"></i></a></li> \
+                                                {{/if}} \
+                                                <li><a href="#" class="previous"><i class="icon-step-backward"></i></a></li> \
+                                            {{/unless}} \
                                             {{#if pageNumbersEnabled}} \
-                                                <li><a href="#" class="last"><i class="icon-fast-forward"></i></a></li> \
+                                                {{#each pages}} \
+                                                    {{#if isCurrentPage}} \
+                                                        <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                                    {{/if}} \
+                                                    {{#unless isCurrentPage}} \
+                                                        <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                                    {{/unless}} \
+                                                {{/each}} \
                                             {{/if}} \
-                                        {{/unless}} \
-                                    </ul> \
+                                            {{#if isLastPage}} \
+                                                <li><a href="#" class="next"><i class="icon-step-forward" style="opacity: 0.5"></i></a></li> \
+                                                {{#if pageNumbersEnabled}} \
+                                                    <li><a href="#" class="last"><i class="icon-fast-forward" style="opacity: 0.5"></i></a></li> \
+                                                {{/if}} \
+                                            {{/if}} \
+                                            {{#unless isLastPage}} \
+                                                <li><a href="#" class="next"><i class="icon-step-forward"></i></a></li> \
+                                                {{#if pageNumbersEnabled}} \
+                                                    <li><a href="#" class="last"><i class="icon-fast-forward"></i></a></li> \
+                                                {{/if}} \
+                                            {{/unless}} \
+                                        </ul> \
+                                    </div> \
                                 </div>',
             tableTemplate: '<table><thead></thead><tbody></tbody></table>',
             headerTemplate: '<th width="{{width}}">{{title}}</th>',
@@ -49,11 +59,7 @@
             emptyCellTemplate: '<td>&nbsp;</td>',
             loadingOverlayTemplate: '<div class="loading"></div>',
             currentPageTemplate: '<span class="page-number">{{pageNumber}}</span>',
-            pageLinkTemplate: '<li><a class="page-number" href="#">{{pageNumber}}</a></li>',
-            pageOptionsBar: '<div class="form-horizontal">' +
-                                '<div class="control-group pull-left"><label class="control-label-left">Goto Page</label><div class="controls"><div class="input-append"><input type="text" class="page-picker-number span1"><button class="page-picker-button btn">Go</button></div></div></div>' +
-                                '<div class="control-group pull-right"><label class="control-label">Rows Per Page</label><div class="controls"><select class="page-size-picker span1"><option selected="selected" value="10">10</option><option value="50">50</option><option value="100">100</option></select></div></div>' +
-                            '<div class="clearfix"></div></div>'
+            pageLinkTemplate: '<li><a class="page-number" href="#">{{pageNumber}}</a></li>'
         }, options.templates);
 
         var settings = $.extend({
@@ -75,9 +81,9 @@
             minimumVisibleRows: 10,
             showLoadingOverlay: true,
             showPageNumbers: true,
+            showGotoPage: true,
             numberOfPageLinks: 10,
             pageRenderedEvent: null,
-            pageOptionsBar: false,
             alwaysShowNavigationBar: true,
             ajaxError: null,
             showHeader: true
@@ -201,6 +207,7 @@
                     isLastPage: numberOfRows !== null ? currentPage == totalPages - 1 : pageData !== undefined && pageData.length < settings.pageSize,
                     currentPage: currentPage + 1,
                     totalPages: totalPages,
+                    showGotoPage: settings.showGotoPage,
                     pages: []
                 };
                 for (pageIndex = pageRange.firstPage; pageIndex <= pageRange.lastPage; pageIndex++) {
