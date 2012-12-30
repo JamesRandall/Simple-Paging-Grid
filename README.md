@@ -74,7 +74,10 @@ Like many jQuery plugins the Simple Paging Grid is configured using an options d
 
 **Option**      |**Description**
 ----------------|-----------------------------------------
+ajaxError       |*(Optional)* Called in the event of errors contacting the server. Same format as the jQuery ajax error handler.
 cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Handlebars (see below).
+cellContainerTemplates |*(Optional)* Allows the containers for each cell to be rendered with a custom style. By default cell containers are plain td tags.
+columnDefinitionTemplates|*(Optional)* Allows column tags to be defined before the thead block.
 columnKeys      |An array of property names within the data block, one for each column
 columnNames     |An array of titles for the column headers
 columnWidths    |*(Optional)* The width of each column either absolute or percentages
@@ -85,10 +88,16 @@ headerTemplates |*(Optional)* By default Simple Paging Grid just places column n
 initialSortColumn|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
 minimumVisibleRows|*(Optional)* If the data source supplies less rows than this value then the grid is padded out with empty rows until a minimum number of rows are viewable. If set to the pageSize then this stops the grid from changing size during loading from a URL. Defaults to 10.
 numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum number of page links to show. Defaults to 10.
+pageRenderedEvent|*(Optional)* A function that is called and supplied with the page data straight after the page has been rendered.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
+postDataFunction|*(Optional)* If supplied then the HTTP POST verb will be used for communicating with the server via the URL set in dataUrl. This function should return an object containing the data you want to be in the payload (there is no need to include the page number etc. as this will be supplied by the grid).
+rowTemplates|*(Optional)* If supplied allows rows to be styled. By default the grid simply emits tr tags. Row templates are cycled through - a typical use would be to supply two row templates for alternate row background shading.
 showLoadingOverlay|*(Optional)* If set to true then when data is being retrieved from a URL a loading overlay is shown. Defaults to true.
+showGotoPage    |*(Optional*) If this is set to true and the grid is populated with an object that supplies the total number of rows (see below) then a text box and Go button will be included in the button bar that allows the user to type in and go to a page number.
+showHeader      |*(Optional)* True to show the column headers, false to hide. Defaults to true.
 showPageNumbers |*(Optional)* If this is set to true and the grid is populated with an object that supplies the total number of rows (see below) then quick links to specific page numbers are shown in the button bar.
 sortable        |*(Optional)* An array of boolean values indicating if the grid can be sorted by the column. If unspecified then the grid is not sortable.
+sortorder       |*(Optional)* The starting sort order. Should be asc or desc.
 tableClass      |*(Optional*) The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
 templates       |*(Optional*)The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
 
@@ -286,7 +295,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
+29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
 04/04/2012 |0.15    |Added support for Mustache templates

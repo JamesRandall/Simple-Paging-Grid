@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SimplePagingGrid</id>
-    <version>0.3.0.0</version>
+    <version>0.4.0.0</version>
     <title>Simple Paging Grid</title>
     <authors>James Randall</authors>
     <owners>James Randall</owners>
@@ -16,7 +16,7 @@
     <tags>grid jquery javascript handlebars</tags>
     <dependencies>
       <dependency id="Handlebars.js" version="1.0.7" />
-      <dependency id="jQuery" version="1.7.2" />
+      <dependency id="jQuery" version="1.8.3" />
     </dependencies>
   </metadata>
 </package>
