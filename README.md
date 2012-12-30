@@ -29,6 +29,9 @@ Finally - thanks to the authors of jQuery, Handlebars and Twitter Bootstrap all 
 3. Sorting
 <http://www.accidentalfish.com/simplePagingGrid/examples/sorting/index.html>
 
+4. Function Binding
+<http://www.accidentalfish.com/simplePagingGrid/examples/functionBinding/index.html>
+
 ## Basic Usage
 
 Include the stylesheet simplePagingGrid.css (all this includes are the triangle icons for column sorting)
@@ -39,7 +42,7 @@ Include jQuery, Handlebars and the Simple Paging Grid script:
 
     <script src="/script/jquery-1.7.1.min.js" type="text/javascript">
     <script src="/script/handlebars.js" type="text/javascript">
-    <script src="/script/simplePagingGrid-0.1.min.js" type="text/javascript">
+    <script src="/script/simplePagingGrid-0.4.js" type="text/javascript">
 
 Note that jQuery and Handlebars can be found at:
 

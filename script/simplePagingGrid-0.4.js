@@ -9,8 +9,8 @@
                                     {{#if showGotoPage}} \
                                         <div class="pull-right"  style="padding-left: 1em;"> \
                                             <div class="input-append" > \
-                                                    <input style="width: 3em;" type="text" value="{{currentPage}}" /> \
-                                                    <button class="btn" type="button">Go</button> \
+                                                    <input style="width: 3em;" class="pagetextpicker" type="text" value="{{currentPage}}" /> \
+                                                    <button class="btn pagetextpickerbtn" type="button">Go</button> \
                                             </div> \
                                         </div> \
                                     {{/if}} \
@@ -84,7 +84,6 @@
             showGotoPage: true,
             numberOfPageLinks: 10,
             pageRenderedEvent: null,
-            alwaysShowNavigationBar: true,
             ajaxError: null,
             showHeader: true
         }, options);
@@ -94,45 +93,17 @@
             settings.templates[index] = Handlebars.compile(value);
         });
 
-        if (settings.cellTemplates !== null) {
-            $.each(settings.cellTemplates, function (index) {
-                if (settings.cellTemplates[index] !== null) {
-                    settings.cellTemplates[index] = Handlebars.compile(settings.cellTemplates[index]);
-                }
-            });
-        }
-
-        if (settings.cellContainerTemplates !== null) {
-            $.each(settings.cellContainerTemplates, function (index) {
-                if (settings.cellContainerTemplates[index] !== null) {
-                    settings.cellContainerTemplates[index] = Handlebars.compile(settings.cellContainerTemplates[index]);
-                }
-            });
-        }
-
-        if (settings.columnDefinitionTemplates !== null) {
-            $.each(settings.columnDefinitionTemplates, function (index) {
-                if (settings.columnDefinitionTemplates[index] !== null) {
-                    settings.columnDefinitionTemplates[index] = Handlebars.compile(settings.columnDefinitionTemplates[index]);
-                }
-            });
-        }
-
-        if (settings.headerTemplates !== null) {
-            $.each(settings.headerTemplates, function (index) {
-                if (settings.headerTemplates[index] !== null) {
-                    settings.headerTemplates[index] = Handlebars.compile(settings.headerTemplates[index]);
-                }
-            });
-        }
-
-        if (settings.rowTemplates !== null) {
-            $.each(settings.rowTemplates, function (index) {
-                if (settings.rowTemplates[index] !== null) {
-                    settings.rowTemplates[index] = Handlebars.compile(settings.rowTemplates[index]);
-                }
-            });
-        }
+        var templateArrayProperties = [ "cellTemplates", "cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
+        $.each(templateArrayProperties, function(index, propertyName) {
+            var templateArray = settings[propertyName];
+            if (templateArray !== null) {
+                $.each(templateArray, function(index) {
+                    if (templateArray[index] !== null) {
+                        templateArray[index] = Handlebars.compile(templateArray[index]);
+                    }
+                });
+            }
+        });
 
         return this.each(function () {
             var buttonBarHtml;
@@ -147,6 +118,7 @@
             var nextButton;
             var lastButton;
             var pageTextPicker;
+            var pageTextPickerBtn;
             var pageData;
             var numberOfRows = null;
             var sortOrder = settings.sortOrder;
@@ -202,12 +174,12 @@
                 }
 
                 var paginationModel = {
-                    pageNumbersEnabled: numberOfRows !== null,
+                    pageNumbersEnabled: numberOfRows !== null && settings.showPageNumbers,
                     isFirstPage: currentPage == 0,
                     isLastPage: numberOfRows !== null ? currentPage == totalPages - 1 : pageData !== undefined && pageData.length < settings.pageSize,
                     currentPage: currentPage + 1,
                     totalPages: totalPages,
-                    showGotoPage: settings.showGotoPage,
+                    showGotoPage: numberOfRows !== null && settings.showGotoPage,
                     pages: []
                 };
                 for (pageIndex = pageRange.firstPage; pageIndex <= pageRange.lastPage; pageIndex++) {
@@ -220,6 +192,7 @@
                 nextButton = buttonBar.find('.next');
                 lastButton = buttonBar.find('.last');
                 pageTextPicker = buttonBar.find(".pagetextpicker");
+                pageTextPickerBtn = buttonBar.find(".pagetextpickerbtn");
 
                 previousButton.click(function (event) {
                     event.preventDefault();
@@ -264,9 +237,8 @@
                     refreshData();
                 });
 
-                pageTextPicker.keydown(function (ev) {
-                    var code = (ev.keyCode ? ev.keyCode : ev.which);
-                    if (code == 13) {
+                if (paginationModel.showGotoPage) {
+                    function gotoTextPickerPage() {
                         var value = pageTextPicker.val();
                         if ($.isNumeric(value)) {
                             currentPage = 1 * value - 1;
@@ -279,8 +251,19 @@
                             refreshData();
                         }
                     }
-                });
-                
+
+                    pageTextPicker.keydown(function (ev) {
+                        var code = (ev.keyCode ? ev.keyCode : ev.which);
+                        if (code == 13) {
+                            gotoTextPickerPage();
+                        }
+                    });
+
+                    pageTextPickerBtn.click(function (ev) {
+                        ev.preventDefault();
+                        gotoTextPickerPage();
+                    })
+                }
 
                 if (previousButtonBar !== undefined) {
                     previousButtonBar.replaceWith(buttonBar);
@@ -335,6 +318,8 @@
                     settings.dataUrl = newDataUrl;
                     currentPage = 0;
                 }
+
+                currentPage = Math.floor(currentPage);
 
                 if (settings.data !== null) {
                     dataToSort = null;
