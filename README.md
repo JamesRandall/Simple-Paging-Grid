@@ -32,6 +32,9 @@ Finally - thanks to the authors of jQuery, Handlebars and Twitter Bootstrap all 
 4. Function Binding
 <http://www.accidentalfish.com/simplePagingGrid/examples/functionBinding/index.html>
 
+5. Page Numbers
+<http://www.accidentalfish.com/simplePagingGrid/examples/pageNumbers/index.html>
+
 ## Basic Usage
 
 Include the stylesheet simplePagingGrid.css (all this includes are the triangle icons for column sorting)
