@@ -5,7 +5,7 @@ Simple Paging Grid is a lightweight CSS friendly readonly grid that supports bot
 ![Screenshot]
 (http://www.accidentalfish.com/simple-paging-grid-screenshot.png)
 
-It's built as a jQuery plugin and has been developed and tested against version 1.7.1. The latest version also uses Handlebars to provide custom templating. These and the accompanying licenses can be found at:
+It's built as a jQuery plugin and has been developed and tested against version 1.7.1 and higher. The latest version also uses Handlebars to provide custom templating. These and the accompanying licenses can be found at:
 
 <http://jquery.com/>
 
@@ -43,8 +43,8 @@ Include the stylesheet simplePagingGrid.css (all this includes are the triangle 
 
 Include jQuery, Handlebars and the Simple Paging Grid script:
 
-    <script src="/script/jquery-1.7.1.min.js" type="text/javascript">
-    <script src="/script/handlebars.js" type="text/javascript">
+    <script src="/script/jquery-1.8.3.min.js" type="text/javascript">
+    <script src="/script/handlebars-1.0.rc.1.js" type="text/javascript">
     <script src="/script/simplePagingGrid-0.4.js" type="text/javascript">
 
 Note that jQuery and Handlebars can be found at:
