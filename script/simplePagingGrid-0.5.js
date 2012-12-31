@@ -127,6 +127,7 @@
             var sortElement = null;
             var loadingOverlay = null;
             var gridElement = this;
+            var fetchedData = false;
             var firstRefresh = true;
             var $this = $(this);
 
@@ -346,6 +347,7 @@
                         }
                         return aVal.localeCompare(bVal);
                     });
+                    fetchedData = true;
                     pageData = dataPage(sortedData, currentPage, settings.pageSize);
                     gridElement.currentData = pageData;
                     loadData();
@@ -375,6 +377,7 @@
                             dataType: 'json',
                             data: postData,
                             success: function (jsonData) {
+                                fetchedData = true;
                                 getPageDataFromSource(jsonData);
                                 gridElement.currentData = pageData;
                                 loadData();
@@ -400,6 +403,7 @@
                                 sortOrder: sortOrder
                             },
                             success: function (jsonData) {
+                                fetchedData = true;
                                 getPageDataFromSource(jsonData);
                                 gridElement.currentData = pageData;
                                 loadData();
@@ -416,6 +420,7 @@
                     }
                 }
                 else if (settings.dataFunction !== null) {
+                    fetchedData = true;
                     getPageDataFromSource(settings.dataFunction(currentPage, settings.pageSize, sortedColumn, sortOrder));
                     gridElement.currentData = pageData;
                     loadData();
@@ -425,7 +430,7 @@
             }
 
             function loadData() {
-                if (firstRefresh && pageData.length === 0 && settings.templates.emptyTemplate !== null) {
+                if (fetchedData && firstRefresh && pageData.length === 0 && settings.templates.emptyTemplate !== null) {
                     table.remove();
                     buttonBar.remove();
                     $this.append(settings.templates.emptyTemplate());
