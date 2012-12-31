@@ -167,7 +167,7 @@ To fetch data dynamically from a web server as a user pages backwards and forwar
             columnNames: ["Name", "Price ($)", "Quantity"],
             columnKeys: ["Name", "Price", "Quantity"],
             sortable: [true, true, true],
-            initialSortOrder: "Name",
+            initialSortColumn: "Name",
             dataUrl: "/Orders"
         });
     });
@@ -194,7 +194,7 @@ To load data from a function then a function should be supplied to the datagrid 
             columnNames: ["Name", "Price ($)", "Quantity"],
             columnKeys: ["Name", "Price", "Quantity"],
             sortable: [true, true, true],
-            initialSortOrder: "Name",
+            initialSortColumn: "Name",
             dataFunction: getDataFunction
         });
     });
@@ -246,7 +246,7 @@ Like cell templates you can customize header cell output by supplying your own H
             '<th width="75"><button class="btn btn-mini" id="addselectall">Select All</button></th>'
         ],
         sortable: [ false, true, true],
-        initialSortOrder: "DisplayName",
+        initialSortColumn: "DisplayName",
         dataUrl: "Product/All"
     });
 
