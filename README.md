@@ -266,6 +266,7 @@ You can override these to style things differently by using the templates option
 ----------------------|----------------
 buttonBarTemplate     |The button bar
 emptyCellTemplate     |Template used when padding the grid with empty rows
+emptyTemplate         |*(Optional)*If the grid has no data when it first loads (e.g. the result from the server is an empty array) then this template will be shown instead of th grid.
 headerTemplate        |An unsortable header
 loadingOverlayTemplate|The loading overlay
 sortableHeaderTemplate|A sortable header
@@ -298,6 +299,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
+31/12/2012 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
