@@ -480,7 +480,10 @@
                         }
                     }
                 }
-                firstRefresh = false;
+                if (fetchedData && firstRefresh)
+                {
+                    firstRefresh = false;
+                }
             }
 
             table = $(settings.templates.tableTemplate());
