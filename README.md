@@ -71,6 +71,7 @@ In your document ready event handler configure your grid
 
 For Visual Studio users Simple Paging Grid is also available as a NuGet package (<http://nuget.org/packages/SimplePagingGrid>) which will download the dependencies for you.
 
+
 ## Options
 
 Like many jQuery plugins the Simple Paging Grid is configured using an options dictionary as can be seen above. Option keys include:
