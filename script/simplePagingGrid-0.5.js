@@ -68,7 +68,7 @@
             columnWidths: [],
             cellTemplates: null,
             cellContainerTemplates: null,
-            columnDefinitionTemplates: null,            
+            columnDefinitionTemplates: null,
             headerTemplates: null,
             rowTemplates: ['<tr>'],
             sortable: [],
@@ -91,16 +91,16 @@
 
         settings.templates = {};
         $.each(templates, function (index, value) {
-            settings.templates[index] = value !== null ? Handlebars.compile(value) : null;            
+            settings.templates[index] = value !== null ? Handlebars.compile(value) : null;
         });
 
-        var templateArrayProperties = [ "cellTemplates", "cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
-        $.each(templateArrayProperties, function(index, propertyName) {
+        var templateArrayProperties = ["cellTemplates", "cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
+        $.each(templateArrayProperties, function (index, propertyName) {
             var templateArray = settings[propertyName];
             if (templateArray !== null) {
-                $.each(templateArray, function(index) {
-                    if (templateArray[index] !== null) {
-                        templateArray[index] = Handlebars.compile(templateArray[index]);
+                $.each(templateArray, function (innerIndex) {
+                    if (templateArray[innerIndex] !== null) {
+                        templateArray[innerIndex] = Handlebars.compile(templateArray[innerIndex]);
                     }
                 });
             }
@@ -480,8 +480,7 @@
                         }
                     }
                 }
-                if (fetchedData && firstRefresh)
-                {
+                if (fetchedData && firstRefresh) {
                     firstRefresh = false;
                 }
             }
