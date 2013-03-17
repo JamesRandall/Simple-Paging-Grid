@@ -105,6 +105,41 @@ sortorder       |*(Optional)* The starting sort order. Should be asc or desc.
 tableClass      |*(Optional*) The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
 templates       |*(Optional*)The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
 
+## Methods
+
+Simple Paging Grid also exposes methods for use on instantiated grids. These use the jQuery UI plugin type syntax, for example:
+
+    $("#mygrid").simplePagingGrid("refresh", "http://optional.new.url/action");
+    
+### refresh
+
+Updates the grid with fresh data from the data source.
+
+**Parameter**   |**Description**
+----------------|-----------------------------------------
+newUrl          |*(Optional)* Supply a new URL for example to update a search parameter
+
+Example:
+  
+	$("#mygrid").simplePagingGrid("refresh", "http://optional.new.url/action");
+
+### currentPageData
+
+Gets the underlying data model for the current page.
+
+**Parameter**   |**Description**
+----------------|-----------------------------------------
+callback        |A function that will be given the page data
+
+Example:
+
+    var data;
+    $("#exampleGrid").simplePagingGrid("currentPageData",
+        function(currentPage) { data = currentPage; }
+    );
+    alert("Number of rows: " + data.length);
+
+
 ## Loading Data Into The Grid
 
 Data can be loaded into the grid in three different ways:

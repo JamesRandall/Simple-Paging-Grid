@@ -486,8 +486,8 @@
             this._refreshData(optionalUrl);
         },
 
-        currentPageData: function() {
-            return this._pageData;
+        currentPageData: function(callback) {
+            callback(this._pageData);
         }
     }
 
@@ -601,7 +601,7 @@
                 $.data(this, "plugin_" + pluginName, new SimplePagingGrid( this, settings ));
             }
             else {
-                data[functionArguments[0]].apply(data, Array.prototype.slice.call(functionArguments,1));
+                return data[functionArguments[0]].apply(data, Array.prototype.slice.call(functionArguments,1));
             }
         });
     };
