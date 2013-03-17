@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "MVC Example";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+	<div class="row-fluid">
+		<p>Below is an example of a grid extended with a search bar and that refreshes when the search button is clicked and brings data from the server.</p>
+		<div id="exampleGrid"></div>
+	</div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function getUrl() {
+                var searchText = $(".searchText").val();
+                if (searchText === undefined) searchText = "";
+                return '@Url.Action("GridData")?searchText=' + searchText;
+            }
+
+            $("#exampleGrid").simplePagingGrid({
+                columnNames: ["Name", "Price ($)", "Quantity"],
+                columnKeys: ["Name", "Price", "Quantity"],
+                columnWidths: ["50%", "25%", "25%"],
+                dataUrl: getUrl(),
+                showLoadingOverlay: false,
+                tableClass: "table table-striped table-bordered",
+                templates: {
+                    emptyTemplate: null,
+                    tableTemplate: '<table><thead><tr class="searchbar" style="vertical-align:middle;"><th colspan="3" style="vertical-align: middle;"><div class="input-append"><input placeholder="Search" type="text" class="searchText"><button class="btn searchBtn" type="button">Search</button></div></th></tr></thead><tbody></tbody></table>'
+                }
+            });
+
+            $(".searchBtn").click(function(ev) {
+                ev.preventDefault();
+                $("#exampleGrid").simplePagingGrid("refresh", getUrl());
+            });
+
+            $(".searchText").keyup(function(ev) {
+                var code = (ev.keyCode ? ev.keyCode : ev.which);
+                if (code === 13) {
+                    ev.preventDefault();
+                    $("#exampleGrid").simplePagingGrid("refresh", getUrl());
+                }
+            });
+        });
+    </script>
+}
