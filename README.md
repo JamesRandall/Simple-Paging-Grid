@@ -302,7 +302,7 @@ You can override these to style things differently by using the templates option
 ----------------------|----------------
 buttonBarTemplate     |The button bar
 emptyCellTemplate     |Template used when padding the grid with empty rows
-emptyTemplate         |*(Optional)*If the grid has no data when it first loads (e.g. the result from the server is an empty array) then this template will be shown instead of th grid.
+emptyTemplate         |*(Optional)*If the grid has no data when it first loads (e.g. the result from the server is an empty array) then this template will be shown instead of the grid.
 headerTemplate        |An unsortable header
 loadingOverlayTemplate|The loading overlay
 sortableHeaderTemplate|A sortable header
@@ -319,7 +319,7 @@ The example below shows changing the buttons to Twitter Bootstrap primary style 
         });
     });
 
-The default templates can be located near the top of the unminified source code.
+The default templates can be located near the top of the un-minified source code.
 
 ## Examples
 
@@ -329,13 +329,13 @@ The examples folder in the repository and download package contains a number of 
 * Easily customised through templates
 * Sorting
 * Customisable cells
-* Coming soon: example ASP.Net MVC3 project containing a grid loading dynamic data from the server
+* ASP.Net MVC4 project containing a grid loading dynamic data from the server and showing use of the refresh method.
 
 ## Release History
 
 Date       |Version |Changes
 -----------|--------|--------
-31/12/2012 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template
+17/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
@@ -352,7 +352,7 @@ If you're using the grid with no custom styles other than a change to the look a
 
 ## License
 
-Copyright (C) 2012 Accidental Fish Ltd.
+Copyright (C) 2013 Accidental Fish Ltd.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
