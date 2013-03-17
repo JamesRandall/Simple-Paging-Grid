@@ -18,6 +18,21 @@
                 return '@Url.Action("GridData")?searchText=' + searchText;
             }
 
+            function bindEventHandlers() {
+                $(".searchBtn").click(function (ev) {
+                    ev.preventDefault();
+                    $("#exampleGrid").simplePagingGrid("refresh", getUrl());
+                });
+
+                $(".searchText").keyup(function (ev) {
+                    var code = (ev.keyCode ? ev.keyCode : ev.which);
+                    if (code === 13) {
+                        ev.preventDefault();
+                        $("#exampleGrid").simplePagingGrid("refresh", getUrl());
+                    }
+                });
+            }
+
             $("#exampleGrid").simplePagingGrid({
                 columnNames: ["Name", "Price ($)", "Quantity"],
                 columnKeys: ["Name", "Price", "Quantity"],
@@ -26,21 +41,14 @@
                 showLoadingOverlay: false,
                 tableClass: "table table-striped table-bordered",
                 templates: {
-                    emptyTemplate: null,
+                    emptyTemplate: '<table class="table table-striped table-bordered"><thead><tr class="searchbar" style="vertical-align:middle;"><th colspan="3" style="vertical-align: middle;"><div class="input-append"><input placeholder="Search" type="text" class="searchText"><button class="btn searchBtn" type="button">Search</button></div></th></tr></thead><tbody><tr><td colspan="3">No results</td></tr></tbody></table>',
                     tableTemplate: '<table><thead><tr class="searchbar" style="vertical-align:middle;"><th colspan="3" style="vertical-align: middle;"><div class="input-append"><input placeholder="Search" type="text" class="searchText"><button class="btn searchBtn" type="button">Search</button></div></th></tr></thead><tbody></tbody></table>'
-                }
-            });
-
-            $(".searchBtn").click(function(ev) {
-                ev.preventDefault();
-                $("#exampleGrid").simplePagingGrid("refresh", getUrl());
-            });
-
-            $(".searchText").keyup(function(ev) {
-                var code = (ev.keyCode ? ev.keyCode : ev.which);
-                if (code === 13) {
-                    ev.preventDefault();
-                    $("#exampleGrid").simplePagingGrid("refresh", getUrl());
+                },
+                emptyTemplateCreated: function() {
+                    bindEventHandlers();
+                },
+                gridCreated: function() {
+                    bindEventHandlers();
                 }
             });
         });

@@ -64,7 +64,7 @@ namespace mvcSearch.Controllers
 
             int totalRows = query.Count();
             Product[] items = query.Skip(page*pageSize).Take(pageSize).ToArray();
-
+            
             return Json(new
                             {
                                 currentPage = items,

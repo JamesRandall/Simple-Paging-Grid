@@ -35,6 +35,7 @@
         _loadingOverlay: null,
         _fetchedData: false,
         _firstRefresh: true,
+        _showingEmptyTemplate: false,
 
         init: function() {
             var that = this;
@@ -42,19 +43,33 @@
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
 
+            that._buildTable();
+            
+            that._refreshData();
+
+            that._table.insertBefore(that._buttonBar);
+            $(window).resize(that._sizeLoadingOverlay);
+            
+            if (that._settings.gridCreated !== null) {
+                that._settings.gridCreated();
+            }
+        },
+        
+        _buildTable: function () {
+            var that = this;
             that._table = $(that._settings.templates.tableTemplate());
             that._thead = that._table.find("thead");
             that._tbody = that._table.find("tbody");
 
             if (that._settings.columnDefinitionTemplates !== null) {
-                $.each(that._settings.columnDefinitionTemplates, function(index, template) {
+                $.each(that._settings.columnDefinitionTemplates, function (index, template) {
                     $(template(index)).insertBefore(that._thead);
                 });
             }
 
             if (that._settings.showHeader) {
                 that._headerRow = $("<tr>").appendTo(that._thead);
-                $.each(that._settings.columnNames, function(index, columnName) {
+                $.each(that._settings.columnNames, function (index, columnName) {
                     var sortEnabled = that._settings.sortable[index];
                     var sortAscending;
                     var sortDescending;
@@ -89,21 +104,18 @@
                             that._sortElement = that._sortOrder === "asc" ? sortAscending : sortDescending;
                             that._sortElement.addClass(that._sortOrder === "asc" ? "sort-ascending-active" : "sort-descending-active");
                             that._refreshData();
-                        }
-
-                        ;
-
+                        };
 
                         if (sortContainer !== null) {
-                            sortContainer.click(function(event) {
+                            sortContainer.click(function (event) {
                                 sort(event);
                             });
                         } else {
-                            sortAscending.click(function(event) {
+                            sortAscending.click(function (event) {
                                 sort(event);
                             });
 
-                            sortDescending.click(function(event) {
+                            sortDescending.click(function (event) {
                                 sort(event);
                             });
                         }
@@ -121,10 +133,6 @@
             that._table.addClass(that._settings.tableClass);
 
             that._buildButtonBar();
-            that._refreshData();
-
-            that._table.insertBefore(that._buttonBar);
-            $(window).resize(that._sizeLoadingOverlay);
         },
 
         _numberOfPages: function() {
@@ -211,7 +219,8 @@
             if (that._numberOfRows === null) {
                 that._firstButton.remove();
                 that._lastButton.remove();
-            } else {
+            }
+            else {
                 that._firstButton.click(function(event) {
                     event.preventDefault();
                     if (!paginationModel.isFirstPage) {
@@ -420,11 +429,34 @@
 
         _loadData: function() {
             var that = this;
-            if (that._fetchedData && that._firstRefresh && that._pageData.length === 0 && that._settings.templates.emptyTemplate !== null) {
+            if (that._pageData.length === 0 && that._settings.templates.emptyTemplate !== null) {
                 that._table.remove();
                 that._buttonBar.remove();
+                that._buttonBar = undefined;
+                that._table = undefined;
                 that.$element.append(that._settings.templates.emptyTemplate());
+
+                that._table = that.$element.find("table");
+                that._thead = that._table.find("thead");
+                that._tbody = that._table.find("tbody");
+                that._showingEmptyTemplate = true;
+                
+                if (that._settings.emptyTemplateCreated !== null) {
+                    that._settings.emptyTemplateCreated();
+                }
             } else {
+                if (that._showingEmptyTemplate) {
+                    that.$element.empty();
+                    
+                    that._buildTable();
+                    that._table.insertBefore(that._buttonBar);
+                    that._showingEmptyTemplate = false;
+
+                    if (that._settings.gridCreated !== null) {
+                        that._settings.gridCreated();
+                    }
+                }
+
                 var rowTemplateIndex = 0;
                 that._tbody.empty();
                 $.each(that._pageData, function(rowIndex, rowData) {
@@ -569,7 +601,11 @@
             numberOfPageLinks: 10,
             pageRenderedEvent: null,
             ajaxError: null,
-            showHeader: true
+            showHeader: true,
+            
+            // Event Handlers
+            emptyTemplateCreated: null,
+            gridCreated: null
         }, options);
 
         settings.templates = {};
