@@ -510,6 +510,10 @@
                     originalData = that._sourceData.currentPage;
                     that._sourceData.currentPage = that._pageData;
                 }
+                else {
+                    originalData = that._sourceData;
+                    that._sourceData = that._pageData;
+                }
 
                 $.each(that._pageData, function(rowIndex, rowData) {
                     if (rowIndex < that._settings.pageSize) {
@@ -541,6 +545,9 @@
                 // See comment above
                 if (!$.isArray(that._sourceData)) {
                     that._sourceData.currentPage = originalData;
+                }
+                else {
+                    that._sourceData = originalData;
                 }
 
                 if (that._pageData.length < that._settings.minimumVisibleRows) {
