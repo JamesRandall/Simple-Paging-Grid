@@ -27,6 +27,7 @@
         _lastButton: undefined,
         _pageTextPicker: undefined,
         _pageTextPickerBtn: undefined,
+        _sourceData: undefined,
         _pageData: undefined,
         _numberOfRows: null,
         _sortOrder: null,
@@ -36,6 +37,7 @@
         _fetchedData: false,
         _firstRefresh: true,
         _showingEmptyTemplate: false,
+        _compiledCellTemplates: null,
 
         init: function() {
             var that = this;
@@ -314,12 +316,41 @@
             }
         },
 
-        _getPageDataFromSource: function(sourceData) {
+        _parseSourceData: function(sourceData) {
+            this._sourceData = sourceData;
             if ($.isArray(sourceData)) {
                 this._pageData = sourceData;
+                this._numberOfRows = null;
             } else if ($.isPlainObject(sourceData)) {
                 this._pageData = sourceData.currentPage;
                 this._numberOfRows = sourceData.totalRows;
+            }
+            this._deferredCellTemplateCompilation();
+        },
+
+        _deferredCellTemplateCompilation: function() {
+            var that = this;
+            if (that._compiledCellTemplates === null && that._settings.cellTemplates !== null) {
+                var setContext = !$.isArray(that._sourceData);
+                that._compiledCellTemplates = [];
+                $.each(that._settings.cellTemplates, function (innerIndex, cellTemplate) {
+                    if (cellTemplate !== null) {
+                        var rowIndex;
+                        var templates = [];
+                        var suppliedTemplateText = cellTemplate;
+                        for (rowIndex = 0; rowIndex < that._settings.pageSize; rowIndex++) {
+                            var templateText = suppliedTemplateText;
+                            if (setContext) {
+                                templateText = '{{#with currentPage.[' + rowIndex + ']}}' + templateText + '{{/with}}'
+                            }
+                            templates.push(Handlebars.compile(templateText));
+                        }
+                        that._compiledCellTemplates.push(templates);
+                    }
+                    else {
+                        that._compiledCellTemplates.push(null);
+                    }
+                });
             }
         },
 
@@ -359,7 +390,9 @@
                     return aVal.localeCompare(bVal);
                 });
                 that._fetchedData = true;
+                that._sourceData = that._settings.data;
                 that._pageData = dataPage(sortedData, that._currentPage, that._settings.pageSize);
+                that._deferredCellTemplateCompilation();
                 that._loadData();
                 that._buildButtonBar();
 
@@ -387,7 +420,7 @@
                         data: postData,
                         success: function(jsonData) {
                             that._fetchedData = true;
-                            that._getPageDataFromSource(jsonData);
+                            that._parseSourceData(jsonData);
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
@@ -412,7 +445,7 @@
                         },
                         success: function(jsonData) {
                             that._fetchedData = true;
-                            that._getPageDataFromSource(jsonData);
+                            that._parseSourceData(jsonData);
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
@@ -427,7 +460,7 @@
                 }
             } else if (that._settings.dataFunction !== null) {
                 that._fetchedData = true;
-                that._getPageDataFromSource(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
+                that._parseSourceData(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
                 that._loadData();
                 that._buildButtonBar();
                 if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
@@ -467,28 +500,30 @@
                 var rowTemplateIndex = 0;
                 that._tbody.empty();
                 $.each(that._pageData, function(rowIndex, rowData) {
-                    var tr = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
-                    rowTemplateIndex++;
-                    if (rowTemplateIndex >= that._settings.rowTemplates.length) {
-                        rowTemplateIndex = 0;
-                    }
-                    $.each(that._settings.columnKeys, function(index, propertyName) {
-                        var td;
-                        if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates !== null) {
-                            td = $(that._settings.cellContainerTemplates[index](index));
-                        } else {
-                            td = $('<td>');
+                    if (rowIndex < that._settings.pageSize) {
+                        var tr = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
+                        rowTemplateIndex++;
+                        if (rowTemplateIndex >= that._settings.rowTemplates.length) {
+                            rowTemplateIndex = 0;
                         }
+                        $.each(that._settings.columnKeys, function(index, propertyName) {
+                            var td;
+                            if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates !== null) {
+                                td = $(that._settings.cellContainerTemplates[index](index));
+                            } else {
+                                td = $('<td>');
+                            }
 
-                        if (that._settings.cellTemplates !== null && index < that._settings.cellTemplates.length && that._settings.cellTemplates[index] !== null) {
-                            td.html(that._settings.cellTemplates[index](rowData));
-                        } else {
-                            var value = rowData[propertyName];
-                            td.html(value);
-                        }
-                        tr.append(td);
-                    });
-                    that._tbody.append(tr);
+                            if (that._compiledCellTemplates !== null && that._compiledCellTemplates[index] !== null && index < that._compiledCellTemplates[index].length && that._compiledCellTemplates[index][rowIndex] !== null) {
+                                td.html(that._compiledCellTemplates[index][rowIndex](that._sourceData));
+                            } else {
+                                var value = rowData[propertyName];
+                                td.html(value);
+                            }
+                            tr.append(td);
+                        });
+                        that._tbody.append(tr);
+                    }
                 });
 
                 if (that._pageData.length < that._settings.minimumVisibleRows) {
@@ -620,7 +655,7 @@
             settings.templates[index] = value !== null ? Handlebars.compile(value) : null;
         });
 
-        var templateArrayProperties = ["cellTemplates", "cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
+        var templateArrayProperties = ["cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
         $.each(templateArrayProperties, function (index, propertyName) {
             var templateArray = settings[propertyName];
             if (templateArray !== null) {
