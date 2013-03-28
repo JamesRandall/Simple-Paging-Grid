@@ -27,6 +27,7 @@
         _lastButton: undefined,
         _pageTextPicker: undefined,
         _pageTextPickerBtn: undefined,
+        _sourceData: undefined,
         _pageData: undefined,
         _numberOfRows: null,
         _sortOrder: null,
@@ -36,6 +37,7 @@
         _fetchedData: false,
         _firstRefresh: true,
         _showingEmptyTemplate: false,
+        _compiledCellTemplates: null,
 
         init: function() {
             var that = this;
@@ -91,11 +93,7 @@
                         sortAscending = headerCell.find(".sort-ascending");
                         sortDescending = headerCell.find(".sort-descending");
 
-                        function sort(event) {
-                            event.preventDefault();
-                            if (that._sortedColumn === columnKey) {
-                                that._sortOrder = that._sortOrder === "asc" ? "desc" : "asc";
-                            }
+                        function setSortHeadings() {
                             that._sortedColumn = columnKey;
                             if (that._sortElement != null) {
                                 that._sortElement.removeClass("sort-ascending-active");
@@ -103,6 +101,14 @@
                             }
                             that._sortElement = that._sortOrder === "asc" ? sortAscending : sortDescending;
                             that._sortElement.addClass(that._sortOrder === "asc" ? "sort-ascending-active" : "sort-descending-active");
+                        }
+
+                        function sort(event) {
+                            event.preventDefault();
+                            if (that._sortedColumn === columnKey) {
+                                that._sortOrder = that._sortOrder === "asc" ? "desc" : "asc";
+                            }
+                            setSortHeadings();
                             that._refreshData();
                         };
 
@@ -118,6 +124,9 @@
                             sortDescending.click(function (event) {
                                 sort(event);
                             });
+                        }
+                        if (that._sortedColumn === columnKey) {
+                            setSortHeadings();
                         }
                     } else {
                         if (headerCell === null) {
@@ -307,12 +316,44 @@
             }
         },
 
-        _getPageDataFromSource: function(sourceData) {
+        _parseSourceData: function(sourceData) {
+            this._sourceData = sourceData;
             if ($.isArray(sourceData)) {
                 this._pageData = sourceData;
+                this._numberOfRows = null;
             } else if ($.isPlainObject(sourceData)) {
                 this._pageData = sourceData.currentPage;
                 this._numberOfRows = sourceData.totalRows;
+            }
+            this._deferredCellTemplateCompilation();
+        },
+
+        _deferredCellTemplateCompilation: function() {
+            var that = this;
+            if (that._compiledCellTemplates === null && that._settings.cellTemplates !== null) {
+                var setArrayContext = $.isArray(that._sourceData);
+                that._compiledCellTemplates = [];
+                $.each(that._settings.cellTemplates, function (innerIndex, cellTemplate) {
+                    if (cellTemplate !== null) {
+                        var rowIndex;
+                        var templates = [];
+                        var suppliedTemplateText = cellTemplate;
+                        for (rowIndex = 0; rowIndex < that._settings.pageSize; rowIndex++) {
+                            var templateText = suppliedTemplateText;
+                            if (setArrayContext) {
+                                templateText = '{{#with this.[' + rowIndex + ']}}' + templateText + '{{/with}}'
+                            }
+                            else {
+                                templateText = '{{#with currentPage.[' + rowIndex + ']}}' + templateText + '{{/with}}'
+                            }
+                            templates.push(Handlebars.compile(templateText));
+                        }
+                        that._compiledCellTemplates.push(templates);
+                    }
+                    else {
+                        that._compiledCellTemplates.push(null);
+                    }
+                });
             }
         },
 
@@ -352,7 +393,9 @@
                     return aVal.localeCompare(bVal);
                 });
                 that._fetchedData = true;
+                that._sourceData = that._settings.data;
                 that._pageData = dataPage(sortedData, that._currentPage, that._settings.pageSize);
+                that._deferredCellTemplateCompilation();
                 that._loadData();
                 that._buildButtonBar();
 
@@ -380,7 +423,7 @@
                         data: postData,
                         success: function(jsonData) {
                             that._fetchedData = true;
-                            that._getPageDataFromSource(jsonData);
+                            that._parseSourceData(jsonData);
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
@@ -405,7 +448,7 @@
                         },
                         success: function(jsonData) {
                             that._fetchedData = true;
-                            that._getPageDataFromSource(jsonData);
+                            that._parseSourceData(jsonData);
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
@@ -420,7 +463,7 @@
                 }
             } else if (that._settings.dataFunction !== null) {
                 that._fetchedData = true;
-                that._getPageDataFromSource(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
+                that._parseSourceData(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
                 that._loadData();
                 that._buildButtonBar();
                 if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
@@ -459,30 +502,53 @@
 
                 var rowTemplateIndex = 0;
                 that._tbody.empty();
-                $.each(that._pageData, function(rowIndex, rowData) {
-                    var tr = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
-                    rowTemplateIndex++;
-                    if (rowTemplateIndex >= that._settings.rowTemplates.length) {
-                        rowTemplateIndex = 0;
-                    }
-                    $.each(that._settings.columnKeys, function(index, propertyName) {
-                        var td;
-                        if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates !== null) {
-                            td = $(that._settings.cellContainerTemplates[index](index));
-                        } else {
-                            td = $('<td>');
-                        }
 
-                        if (that._settings.cellTemplates !== null && index < that._settings.cellTemplates.length && that._settings.cellTemplates[index] !== null) {
-                            td.html(that._settings.cellTemplates[index](rowData));
-                        } else {
-                            var value = rowData[propertyName];
-                            td.html(value);
+                // Note: I don't like this but it allows clients using the data property to "misuse" the currentPage to easily do proper paging
+                // I may revisit the data property in a future update and replace with a pure callback model. Current implementation causes multiple problems.
+                var originalData;
+                if (!$.isArray(that._sourceData)) {
+                    originalData = that._sourceData.currentPage;
+                    that._sourceData.currentPage = that._pageData;
+                }
+                else {
+                    originalData = that._sourceData;
+                    that._sourceData = that._pageData;
+                }
+
+                $.each(that._pageData, function(rowIndex, rowData) {
+                    if (rowIndex < that._settings.pageSize) {
+                        var tr = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
+                        rowTemplateIndex++;
+                        if (rowTemplateIndex >= that._settings.rowTemplates.length) {
+                            rowTemplateIndex = 0;
                         }
-                        tr.append(td);
-                    });
-                    that._tbody.append(tr);
+                        $.each(that._settings.columnKeys, function(index, propertyName) {
+                            var td;
+                            if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates !== null) {
+                                td = $(that._settings.cellContainerTemplates[index](index));
+                            } else {
+                                td = $('<td>');
+                            }
+
+                            if (that._compiledCellTemplates !== null && that._compiledCellTemplates[index] !== null && index < that._compiledCellTemplates[index].length && that._compiledCellTemplates[index][rowIndex] !== null) {
+                                td.html(that._compiledCellTemplates[index][rowIndex](that._sourceData));
+                            } else {
+                                var value = rowData[propertyName];
+                                td.html(value);
+                            }
+                            tr.append(td);
+                        });
+                        that._tbody.append(tr);
+                    }
                 });
+
+                // See comment above
+                if (!$.isArray(that._sourceData)) {
+                    that._sourceData.currentPage = originalData;
+                }
+                else {
+                    that._sourceData = originalData;
+                }
 
                 if (that._pageData.length < that._settings.minimumVisibleRows) {
                     var emptyRowIndex;
@@ -613,7 +679,7 @@
             settings.templates[index] = value !== null ? Handlebars.compile(value) : null;
         });
 
-        var templateArrayProperties = ["cellTemplates", "cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
+        var templateArrayProperties = ["cellContainerTemplates", "columnDefinitionTemplates", "headerTemplates", "rowTemplates"];
         $.each(templateArrayProperties, function (index, propertyName) {
             var templateArray = settings[propertyName];
             if (templateArray !== null) {
