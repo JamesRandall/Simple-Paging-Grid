@@ -366,7 +366,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-17/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data. Also included MVC example.
+28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers

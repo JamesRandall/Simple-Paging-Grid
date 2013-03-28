@@ -499,6 +499,12 @@
 
                 var rowTemplateIndex = 0;
                 that._tbody.empty();
+
+                // Note: I don't like this but it allows clients using the data property to "misuse" the currentPage to easily do proper paging
+                // I may revisit the data property in a future update and replace with a pure callback model. Current implementation causes multiple problems.
+                var originalData = that._sourceData.currentPage;
+                that._sourceData.currentPage = that._pageData;
+
                 $.each(that._pageData, function(rowIndex, rowData) {
                     if (rowIndex < that._settings.pageSize) {
                         var tr = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
@@ -525,6 +531,9 @@
                         that._tbody.append(tr);
                     }
                 });
+
+                // See comment above
+                that._sourceData.currentPage = originalData;
 
                 if (that._pageData.length < that._settings.minimumVisibleRows) {
                     var emptyRowIndex;
