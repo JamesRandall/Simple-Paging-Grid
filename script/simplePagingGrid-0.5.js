@@ -331,7 +331,7 @@
         _deferredCellTemplateCompilation: function() {
             var that = this;
             if (that._compiledCellTemplates === null && that._settings.cellTemplates !== null) {
-                var setContext = !$.isArray(that._sourceData);
+                var setArrayContext = $.isArray(that._sourceData);
                 that._compiledCellTemplates = [];
                 $.each(that._settings.cellTemplates, function (innerIndex, cellTemplate) {
                     if (cellTemplate !== null) {
@@ -340,7 +340,10 @@
                         var suppliedTemplateText = cellTemplate;
                         for (rowIndex = 0; rowIndex < that._settings.pageSize; rowIndex++) {
                             var templateText = suppliedTemplateText;
-                            if (setContext) {
+                            if (setArrayContext) {
+                                templateText = '{{#with this.[' + rowIndex + ']}}' + templateText + '{{/with}}'
+                            }
+                            else {
                                 templateText = '{{#with currentPage.[' + rowIndex + ']}}' + templateText + '{{/with}}'
                             }
                             templates.push(Handlebars.compile(templateText));
@@ -502,8 +505,11 @@
 
                 // Note: I don't like this but it allows clients using the data property to "misuse" the currentPage to easily do proper paging
                 // I may revisit the data property in a future update and replace with a pure callback model. Current implementation causes multiple problems.
-                var originalData = that._sourceData.currentPage;
-                that._sourceData.currentPage = that._pageData;
+                var originalData;
+                if (!$.isArray(that._sourceData)) {
+                    originalData = that._sourceData.currentPage;
+                    that._sourceData.currentPage = that._pageData;
+                }
 
                 $.each(that._pageData, function(rowIndex, rowData) {
                     if (rowIndex < that._settings.pageSize) {
@@ -533,7 +539,9 @@
                 });
 
                 // See comment above
-                that._sourceData.currentPage = originalData;
+                if (!$.isArray(that._sourceData)) {
+                    that._sourceData.currentPage = originalData;
+                }
 
                 if (that._pageData.length < that._settings.minimumVisibleRows) {
                     var emptyRowIndex;
