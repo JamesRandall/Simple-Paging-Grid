@@ -91,11 +91,7 @@
                         sortAscending = headerCell.find(".sort-ascending");
                         sortDescending = headerCell.find(".sort-descending");
 
-                        function sort(event) {
-                            event.preventDefault();
-                            if (that._sortedColumn === columnKey) {
-                                that._sortOrder = that._sortOrder === "asc" ? "desc" : "asc";
-                            }
+                        function setSortHeadings() {
                             that._sortedColumn = columnKey;
                             if (that._sortElement != null) {
                                 that._sortElement.removeClass("sort-ascending-active");
@@ -103,6 +99,14 @@
                             }
                             that._sortElement = that._sortOrder === "asc" ? sortAscending : sortDescending;
                             that._sortElement.addClass(that._sortOrder === "asc" ? "sort-ascending-active" : "sort-descending-active");
+                        }
+
+                        function sort(event) {
+                            event.preventDefault();
+                            if (that._sortedColumn === columnKey) {
+                                that._sortOrder = that._sortOrder === "asc" ? "desc" : "asc";
+                            }
+                            setSortHeadings();
                             that._refreshData();
                         };
 
@@ -118,6 +122,9 @@
                             sortDescending.click(function (event) {
                                 sort(event);
                             });
+                        }
+                        if (that._sortedColumn === columnKey) {
+                            setSortHeadings();
                         }
                     } else {
                         if (headerCell === null) {
