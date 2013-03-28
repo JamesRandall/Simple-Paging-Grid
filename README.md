@@ -178,6 +178,8 @@ When the data is wrapped within an outer object the grid is able to make use of 
 		],
 		totalRows: rows.length
 	}
+	
+You can extend this object model with further data as required by your application and reference this from cell templates. See the section on Cell Templates for further details.
 
 ## Loading Data From A Client Object
 
@@ -266,6 +268,35 @@ As indicated in the table above you can customize cell output by using Handlebar
 If a template is missing as shown by the null in the example above (or instead if the cell template array contains less elements than the number of column keys) then the default behaviour will be used for that cell - you only need to supply templates for those you do want to customise.
 
 If you want to format data within the template (for example to convert a JSON date to a localised human friendly date) then a good way to do this is to register helpers with Handlebars. For more details see the Handlebars documentation here: <http://handlebarsjs.com/>
+
+If you are returning the paged object model from the server you can extend this with additional properties and reference this using relative paths from within your cell templates. For example your server may want to return a base URL as below:
+
+    {
+		currentPage: [
+		    { "OrderLineID": 1, "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+            { "OrderLineID": 1, "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+		    { "OrderLineID": 1, "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+		    { "OrderLineID": 1, "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+		    { "OrderLineID": 1, "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }
+		],
+		totalRows: rows.length,
+		baseUrl: 'http://mydomain.com/orderlinedetail/'
+	}
+	
+You can then reference this from within cells as follows:
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            columnNames: ["Name", "Price ($)", "Quantity"],
+            columnKeys: ["Name", "Price", "Quantity"],
+            columnWidths: ["50%", "25%", "25%"],
+            cellTemplates:[
+				"<a href='{{../baseUrl}}{{OrderLineID}}'>{{Name}}</a>",
+				null,
+				"{{Quantity}} units"],
+            data: getData()
+        });
+    });
 
 ## Header Templates
 
