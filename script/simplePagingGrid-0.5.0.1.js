@@ -27,8 +27,8 @@
         _lastButton: undefined,
         _pageTextPicker: undefined,
         _pageTextPickerBtn: undefined,
-        _sourceData: undefined,
         _pageData: undefined,
+        _sourceData: null,
         _numberOfRows: null,
         _sortOrder: null,
         _sortedColumn: null,
@@ -506,13 +506,15 @@
                 // Note: I don't like this but it allows clients using the data property to "misuse" the currentPage to easily do proper paging
                 // I may revisit the data property in a future update and replace with a pure callback model. Current implementation causes multiple problems.
                 var originalData;
-                if (!$.isArray(that._sourceData)) {
-                    originalData = that._sourceData.currentPage;
-                    that._sourceData.currentPage = that._pageData;
-                }
-                else {
-                    originalData = that._sourceData;
-                    that._sourceData = that._pageData;
+                if (that._sourceData !== null) {
+                    if (!$.isArray(that._sourceData)) {
+                        originalData = that._sourceData.currentPage;
+                        that._sourceData.currentPage = that._pageData;
+                    }
+                    else {
+                        originalData = that._sourceData;
+                        that._sourceData = that._pageData;
+                    }
                 }
 
                 $.each(that._pageData, function(rowIndex, rowData) {
@@ -543,13 +545,15 @@
                 });
 
                 // See comment above
-                if (!$.isArray(that._sourceData)) {
-                    that._sourceData.currentPage = originalData;
+                if (that._sourceData !== null) {
+                    if (!$.isArray(that._sourceData)) {
+                        that._sourceData.currentPage = originalData;
+                    }
+                    else {
+                        that._sourceData = originalData;
+                    }
                 }
-                else {
-                    that._sourceData = originalData;
-                }
-
+                
                 if (that._pageData.length < that._settings.minimumVisibleRows) {
                     var emptyRowIndex;
                     var emptyRow;

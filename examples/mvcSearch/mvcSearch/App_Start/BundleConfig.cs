@@ -11,7 +11,7 @@ namespace mvcSearch
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/handlebars-1.0.rc.1.js",
-                        "~/Scripts/simplePagingGrid-0.5.js"));
+                        "~/Scripts/simplePagingGrid-0.5.0.1.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/bootstrap.css"));
         }
