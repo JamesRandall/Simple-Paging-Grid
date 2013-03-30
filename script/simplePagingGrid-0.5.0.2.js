@@ -44,6 +44,8 @@
         init: function() {
             var that = this;
 
+            that.$element.empty();
+
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
 
@@ -696,6 +698,20 @@
                 });
             }
         });
+
+        if (settings.columnKeys === undefined && settings.data !== null && settings.data.length > 0) {
+            var columnKey;
+            settings.columnKeys = [];
+            for(columnKey in settings.data[0]) {
+                settings.columnKeys.push(columnKey);
+            }
+        }
+
+        if (settings.columnNames === undefined) {
+            if (settings.columnKeys !== null) {
+                settings.columnNames = settings.columnKeys.slice(0);
+            }
+        }
 
         return this.each(function () {
             var data = $.data(this, "plugin_" + pluginName);

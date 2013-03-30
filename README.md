@@ -20,12 +20,6 @@ The Simple Paging Grid is covered by the MIT license (see the bottom of this rea
 
 Finally - thanks to the authors of jQuery, Handlebars and Twitter Bootstrap all of which are invaluable libraries.
 
-## Upcoming Breaking Changes in 0.6
-
-As the grid has got more complex (it's no longer quite so "simple") the initial data binding approach is starting to cause friction in the code. My intention is to replace this with a more flexible callback approach in 0.6 and remove the existing methods.
-
-I intend this to be the only change in 0.6 so that people can continue to use 0.5.
-
 ## Demos
 
 1. Basic grid
@@ -66,6 +60,16 @@ Create a place holder tag in your HTML page
     <div id="exampleGrid"/>
 
 In your document ready event handler configure your grid
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            data: [
+                { "Name": "Pineapple", "Price": 1.50, "Quantity": 2 },
+                { "Name": "Banana", "Price": 0.30, "Quantity": 5 }]
+        });
+    });
+
+The grid will look at your data array and create column headers and keys from the first item. Normally you want a little more sugar and using the columnNames and columnKeys options will let you do that
 
     $(document).ready(function() {
         $("#exampleGrid").simplePagingGrid({
@@ -374,12 +378,19 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
+30/03/2012 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing
 28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
 03/06/2012 |0.20    |Function data source, header templates, loading overlay, minimum size, page numbers
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
+
+## Upcoming (Possible) Breaking Changes in 0.6
+
+As the grid has got more complex (it's no longer quite so "simple") the initial data binding approach is starting to cause friction in the code. My intention is to replace this with a more flexible callback approach in 0.6 and remove the existing methods.
+
+I intend this to be the only change in 0.6 so that people can continue to use 0.5.
 
 ## Breaking Changes 0.3 to 0.4
 
