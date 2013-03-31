@@ -5,17 +5,18 @@ function simpleData() {
 	];
 }
 
-function setupSimpleUrlResponse(assertions) {
+function setupSimpleUrlMock(assertions) {
 	$.mockjax({
 		url: 'getProducts',
 		dataType: 'json',
 		response: function(settings) {
-			assertions(settings.data);
 			this.responseText = {
     			currentPage: simpleData(),
     			totalRows: 2
     		};
-    		start();
+    		if (assertions !== undefined) {
+    			assertions(settings.data);
+    		}
     	},
     	responseTime: 100
 	});
