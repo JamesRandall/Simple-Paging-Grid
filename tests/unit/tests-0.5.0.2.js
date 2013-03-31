@@ -3,24 +3,24 @@
 		$.mockjaxClear();
 	});
 
-	test("should provide no conflict", function () {
+	test("plugin implements noConflict()", function () {
         var simplePagingGrid = $.fn.simplePagingGrid.noConflict();
         ok(!$.fn.simplePagingGrid, 'modal was set back to undefined (org value)');
         $.fn.simplePagingGrid = simplePagingGrid;
     });
 
-    test("is defined on jQuery object", function () {
+    test("simplePagingGrid is defined on jQuery object", function () {
     	var div = $("<div></div>");
     	ok(div.simplePagingGrid, "simplePagingGrid is defined");
     });
 
-    test("should return element", function() {
+    test("creating a grid returns the element", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	ok(div === grid, "element was returned");
     });
 
-    test("should add table", function() {
+    test("creating the grid adds a table to the target element", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	var table = grid.children("table");
@@ -28,7 +28,7 @@
     	ok(table.length===1, "table is added");
     });
 
-    test("should add clearfix", function() {
+    test("creating the grid adds a clearfix line to the target element", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	var clearfix = grid.children("div.clearfix");
@@ -36,21 +36,21 @@
     	ok(clearfix.length===1, "clearfix added");
     });
 
-    test("should only contain two elements", function() {
+    test("after creating the grid the target element only contains two elements (table and clearfix)", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
 
     	ok(grid.children.length === 2, "only contains two elements");
     });
 
-    test("replaces previous contents", function() {
+    test("creating the grid replaces the previous contents", function() {
     	var div = $("<div><span class='previousContents'>hello world</span></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
 
     	ok(grid.find('.previousContents').length === 0, "previous contents gone");
     });
 
-    test("should have thead element", function () {
+    test("the created table has a thead element", function () {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	var table = grid.children("table");
@@ -59,7 +59,7 @@
     	ok (thead.length == 1, "has thead");
     })
 
-    test("should use default column names from object", function() {
+    test("when no column names are supplied with array binding the grid headers are created from the first objects properties", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	var th = grid.find("th");
@@ -69,7 +69,7 @@
     	ok($(th.eq(1)).text() === "Price", "has a header called Price");
     });
 
-    test("should have a tbody element", function() {
+    test("the created table has a tbody element", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	var table = grid.children("table");
@@ -78,7 +78,7 @@
     	ok (tbody.length == 1, "has tbody");
     });
 
-    test("should have two rows for simple data", function() {
+    test("when bound to the simple data array the grid has two rows like the array", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData(), minimumVisibleRows:0});
     	var table = grid.children("table");
@@ -87,7 +87,7 @@
     	ok (tbody.children("tr").length == 2, "has two rows");
     });
 
-    test("should have ten rows due to padding for simple data", function() {
+    test("minimumVisibleRows pads out the number of rows in the grid", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
     	var table = grid.children("table");
@@ -96,7 +96,7 @@
     	ok (tbody.children("tr").length == 10, "has two rows");
     });
 
-    test("should have four cells for simple data", function() {
+    test("when bound to the simple array the grid has 4 cells (2 on each row, 2 rows)", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData(), minimumVisibleRows:0});
     	var table = grid.children("table");
@@ -105,7 +105,7 @@
     	ok (tbody.find("td").length == 4, "has four cells");
     });
 
-    test("should show data from array", function() {
+    test("the grid shows the correct data in the simple array", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData(), minimumVisibleRows:0});
     	var table = grid.children("table");
@@ -123,22 +123,10 @@
     	ok (td3.text() === "2.25", "cell for 2.25");
     });
 
-    asyncTest("should get data from  URL", function() {
-    	expect(1);
-    	$.mockjax({
-    		url: 'getProducts', //?page=0&pageSize=10&sortColumn=Name&sortOrder=asc',
-    		dataType: 'json',
-    		response: function() {
-    			ok (true, "Data URL was called");
-    			start();
-    			this.responseText = {
-	    			currentPage: simpleData(),
-	    			totalRows: 2
-	    		};
-	    	},
-	    	responseTime: 0
+    asyncTest("when bound to a data URL the URL is called", function() {
+    	setupSimpleUrlResponse(function () {
+    		ok (true, "Data URL was called");
     	});
-    
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({
     		dataUrl: "getProducts",
@@ -147,7 +135,7 @@
     	});
     });
 
-    asyncTest("should supply correct url parameters and defaults", function() {
+    asyncTest("when bound to a data URL the grid supplies the correct parameters to the URL", function() {
     	setupSimpleUrlResponse(function(urlParams) {
     		ok (urlParams.page === 0, "Page number was supplied with default 0");
 			ok (urlParams.pageSize === 10, "Page size was supplied with default 10");
