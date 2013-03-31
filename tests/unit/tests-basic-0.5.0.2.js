@@ -1,7 +1,4 @@
 (function() {
-	QUnit.testDone(function() {
-		$.mockjaxClear();
-	});
 
 	test("plugin implements noConflict()", function () {
         var simplePagingGrid = $.fn.simplePagingGrid.noConflict();

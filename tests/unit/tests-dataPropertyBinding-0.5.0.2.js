@@ -1,7 +1,4 @@
 (function() {
-	QUnit.testDone(function() {
-		$.mockjaxClear();
-	});
 
 	test("after creating the grid and displaying the page the page rendered event is called for array binding", function() {
     	var div = $("<div></div>");
@@ -57,5 +54,29 @@
     	ok (td1.text() === "1.5", "cell for 1.5");
     	ok (td2.text() === "Oranges", "cell for Oranges");
     	ok (td3.text() === "2.25", "cell for 2.25");
+    });
+
+    test("an element is returned when the empty template is shown", function() {
+    	var div = $("<div></div>");
+    	var grid = div.simplePagingGrid({
+    		data: null,
+    		minimumVisibleRows:0,
+    		templates: {
+    			emptyTemplate: "No rows"
+    		}
+    	});
+    	ok(div === grid, "The element is returned");
+    });
+
+    test("the empty template is shown", function() {
+    	var div = $("<div></div>");
+    	var grid = div.simplePagingGrid({
+    		data: null,
+    		minimumVisibleRows:0,
+    		templates: {
+    			emptyTemplate: "No rows"
+    		}
+    	});
+    	ok(grid.text() == "No rows", "The element is returned");
     });
 })();

@@ -5,9 +5,9 @@ function simpleData() {
 	];
 }
 
-function setupSimpleUrlMock(assertions) {
+function setupSimpleUrlMock(url, assertions) {
 	$.mockjax({
-		url: 'getProducts',
+		url: url,
 		dataType: 'json',
 		response: function(settings) {
 			this.responseText = {
@@ -18,6 +18,20 @@ function setupSimpleUrlMock(assertions) {
     			assertions(settings.data);
     		}
     	},
-    	responseTime: 100
+    	responseTime: 0
+	});
+}
+
+function setupNullUrlMock(url, assertions) {
+	$.mockjax({
+		url: url,
+		dataType: 'json',
+		response: function(settings) {
+			this.responseText = null;
+    		if (assertions !== undefined) {
+    			assertions(settings.data);
+    		}
+    	},
+    	responseTime: 0
 	});
 }

@@ -14,8 +14,17 @@
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
   <script src="vendor/qunit-1.11.0.js"></script>
+  <script type="text/javascript">
+  	QUnit.config.autostart = false;
+  </script>
   <script src="unit/tests-basic-0.5.0.2.js"></script>
   <script src="unit/tests-dataPropertyBinding-0.5.0.2.js"></script>
   <script src="unit/tests-dataUrlBinding-0.5.0.2.js"></script>
+  <script type="text/javascript">
+  	QUnit.testDone(function() {
+		$.mockjaxClear();
+	});
+  	QUnit.start();
+  </script>
 </body>
 </html>

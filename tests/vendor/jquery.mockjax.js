@@ -207,12 +207,17 @@
 					mockHandler.responseText = xhr.responseText;
 					mockHandler.status = xhr.status;
 					mockHandler.statusText = xhr.statusText;
-					this.responseTimer = setTimeout(process, mockHandler.responseTime || 0);
+					if (mockHandler.responseTime === 0) {
+						process();
+					}
+					else {
+						this.responseTimer = setTimeout(process, mockHandler.responseTime || 0);
+					}
 				}
 			});
 		} else {
 			// type == 'POST' || 'GET' || 'DELETE'
-			if ( requestSettings.async === false ) {
+			if ( requestSettings.async === false || mockHandler.responseTime === 0) {
 				// TODO: Blocking delay
 				process();
 			} else {
