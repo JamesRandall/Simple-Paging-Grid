@@ -1,8 +1,10 @@
 (function() {
-	asyncTest("when bound to a data URL the URL is called", function() {
+    module("URL binding tests")
+
+	asyncTest("when bound to a data URL the URL is called", function(assert) {
     	setupSimpleUrlMock("getProducts0", function () {
     		start();
-    		ok (true, "Data URL was called");
+    		assert.ok (true, "Data URL was called");
     	});
 
     	var div = $("<div></div>");
@@ -13,13 +15,13 @@
     	});
     });
 
-    asyncTest("when bound to a data URL the grid supplies the correct parameters to the URL", function() {
+    asyncTest("when bound to a data URL the grid supplies the correct parameters to the URL", function(assert) {
     	setupSimpleUrlMock("getProducts1", function(urlParams) {
     		start();
-    		ok (urlParams.page === 0, "Page number was supplied with default 0");
-			ok (urlParams.pageSize === 10, "Page size was supplied with default 10");
-			ok (urlParams.sortColumn === null, "Sort column was supplied as null");
-			ok (urlParams.sortOrder === "asc", "Sort order was supplied with default asc");
+    		assert.equal(urlParams.page, 0, "Page number was supplied with default 0");
+			assert.equal(urlParams.pageSize, 10, "Page size was supplied with default 10");
+			assert.isNull(urlParams.sortColumn, "Sort column was supplied as null");
+			assert.equal(urlParams.sortOrder, "asc", "Sort order was supplied with default asc");
     	});
     
     	var div = $("<div></div>");
@@ -30,7 +32,7 @@
     	});
     });
 
-    asyncTest("when bound to a data URL the page rendered event is called", function() {
+    asyncTest("when bound to a data URL the page rendered event is called", function(assert) {
     	setupSimpleUrlMock("getProducts2");
 
     	var div = $("<div></div>");
@@ -40,12 +42,12 @@
     		columnKeys: ["Name", "Price"],
     		pageRenderedEvent: function() {
     			start();
-    			ok(true, "page rendered event called");
+    			assert.ok(true, "page rendered event called");
     		}
     	});
     });
 
-    asyncTest("the grid shows the correct data when bound to a URL", function() {
+    asyncTest("the grid shows the correct data when bound to a URL", function(assert) {
     	setupSimpleUrlMock("getProducts3");
 
     	var div = $("<div></div>");
@@ -65,15 +67,15 @@
 		    	var td2 = tr1.find("td").eq(0);
 		    	var td3 = tr1.find("td").eq(1);  
 
-		    	ok (td0.text() === "Apples", "cell for Apples");
-		    	ok (td1.text() === "1.5", "cell for 1.5");
-		    	ok (td2.text() === "Oranges", "cell for Oranges");
-		    	ok (td3.text() === "2.25", "cell for 2.25");
+		    	assert.equal (td0.text(), "Apples", "cell for Apples");
+		    	assert.equal (td1.text(), "1.5", "cell for 1.5");
+		    	assert.equal (td2.text(), "Oranges", "cell for Oranges");
+		    	assert.equal (td3.text(), "2.25", "cell for 2.25");
     		}
     	});
     });
 
-    asyncTest("the grid shows as empty when a null response is returned from the server and no empty template is supplied", function() {
+    asyncTest("the grid shows as empty when a null response is returned from the server and no empty template is supplied", function(assert) {
     	setupNullUrlMock("getProducts4");
 
     	var div = $("<div></div>");
@@ -87,12 +89,12 @@
     			var table = grid.children("table");
 		    	var tbody = table.children("tbody");
 
-		    	ok(tbody.find("tr").length === 0, "No rows in grid");
+		    	assert.equal(tbody.find("tr").length, 0, "No rows in grid");
     		}
     	});
     });
 
-    asyncTest("the grid shows the empty template when a null response is returned from the server and the template is defined", function() {
+    asyncTest("the grid shows the empty template when a null response is returned from the server and the template is defined", function(assert) {
     	setupNullUrlMock("getProducts5");
 
     	var div = $("<div></div>");
@@ -106,8 +108,8 @@
     		emptyTemplateCreated: function() {
     			start();
     			var table = div.find("table");
-    			ok(table.length === 0, "No table in grid");
-    			ok(div.text() === "No data", "Empty template text is shown");
+    			assert.equal(table.length, 0, "No table in grid");
+    			assert.equal(div.text(), "No data", "Empty template text is shown");
     		}
     	});
     });

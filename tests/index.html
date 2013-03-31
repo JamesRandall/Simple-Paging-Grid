@@ -16,6 +16,14 @@
   <script src="vendor/qunit-1.11.0.js"></script>
   <script type="text/javascript">
   	QUnit.config.autostart = false;
+    QUnit.extend(QUnit.assert, {
+      isNull: function(value, message) {
+        QUnit.push( value === null, value, null, message );
+      },
+      isUndefined: function(value, message) {
+        QUnit.push( value === isUndefined, value, undefined, message);
+      }
+    });
   </script>
   <script src="unit/tests-basic-0.5.0.2.js"></script>
   <script src="unit/tests-dataPropertyBinding-0.5.0.2.js"></script>
