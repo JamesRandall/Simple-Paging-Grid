@@ -1,4 +1,8 @@
 (function() {
+	QUnit.testDone(function() {
+		$.mockjaxClear();
+	});
+
 	test("should provide no conflict", function () {
         var simplePagingGrid = $.fn.simplePagingGrid.noConflict();
         ok(!$.fn.simplePagingGrid, 'modal was set back to undefined (org value)');
@@ -13,7 +17,7 @@
     test("should return element", function() {
     	var div = $("<div></div>");
     	var grid = div.simplePagingGrid({data: simpleData()});
-    	ok(div == grid, "element was returned");
+    	ok(div === grid, "element was returned");
     });
 
     test("should add table", function() {
@@ -98,7 +102,7 @@
     	var table = grid.children("table");
     	var tbody = table.children("tbody");
 
-    	ok (tbody.find("td").length == 4, "has four rows");
+    	ok (tbody.find("td").length == 4, "has four cells");
     });
 
     test("should show data from array", function() {
@@ -108,8 +112,54 @@
     	var tbody = table.children("tbody");
     	var tr0 = tbody.find("tr").eq(0);
     	var tr1 = tbody.find("tr").eq(1);
+    	var td0 = tr0.find("td").eq(0);
+    	var td1 = tr0.find("td").eq(1);
+    	var td2 = tr1.find("td").eq(0);
+    	var td3 = tr1.find("td").eq(1);  
 
-    	
-    	ok (tbody.length == 1, "has tbody");
+    	ok (td0.text() === "Apples", "cell for Apples");
+    	ok (td1.text() === "1.5", "cell for 1.5");
+    	ok (td2.text() === "Oranges", "cell for Oranges");
+    	ok (td3.text() === "2.25", "cell for 2.25");
+    });
+
+    asyncTest("should get data from  URL", function() {
+    	expect(1);
+    	$.mockjax({
+    		url: 'getProducts', //?page=0&pageSize=10&sortColumn=Name&sortOrder=asc',
+    		dataType: 'json',
+    		response: function() {
+    			ok (true, "Data URL was called");
+    			start();
+    			this.responseText = {
+	    			currentPage: simpleData(),
+	    			totalRows: 2
+	    		};
+	    	},
+	    	responseTime: 0
+    	});
+    
+    	var div = $("<div></div>");
+    	var grid = div.simplePagingGrid({
+    		dataUrl: "getProducts",
+    		minimumVisibleRows:0,
+    		columnKeys: ["Name", "Price"]
+    	});
+    });
+
+    asyncTest("should supply correct url parameters and defaults", function() {
+    	setupSimpleUrlResponse(function(urlParams) {
+    		ok (urlParams.page === 0, "Page number was supplied with default 0");
+			ok (urlParams.pageSize === 10, "Page size was supplied with default 10");
+			ok (urlParams.sortColumn === null, "Sort column was supplied as null");
+			ok (urlParams.sortOrder === "asc", "Sort order was supplied with default asc");
+    	});
+    
+    	var div = $("<div></div>");
+    	var grid = div.simplePagingGrid({
+    		dataUrl: "getProducts",
+    		minimumVisibleRows:0,
+    		columnKeys: ["Name", "Price"]
+    	});
     });
 })();
