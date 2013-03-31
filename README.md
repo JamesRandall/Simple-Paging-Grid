@@ -104,6 +104,7 @@ headerTemplates |*(Optional)* By default Simple Paging Grid just places column n
 initialSortColumn|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
 minimumVisibleRows|*(Optional)* If the data source supplies less rows than this value then the grid is padded out with empty rows until a minimum number of rows are viewable. If set to the pageSize then this stops the grid from changing size during loading from a URL. Defaults to 10.
 numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum number of page links to show. Defaults to 10.
+pageNumber      |*(Optional)* Initial page number, defaults to 0.
 pageRenderedEvent|*(Optional)* A function that is called and supplied with the page data straight after the page has been rendered.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
 postDataFunction|*(Optional)* If supplied then the HTTP POST verb will be used for communicating with the server via the URL set in dataUrl. This function should return an object containing the data you want to be in the payload (there is no need to include the page number etc. as this will be supplied by the grid).
@@ -378,7 +379,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-30/03/2012 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing
+30/03/2012 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option
 28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility

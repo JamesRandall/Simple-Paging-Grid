@@ -35,3 +35,16 @@ function setupNullUrlMock(url, assertions) {
     	responseTime: 0
 	});
 }
+
+function createLargeArray(numberOfRows) {
+	if (numberOfRows === undefined) {
+		numberOfRows = 15;
+	}
+
+	var rowNumber;
+	var rows = [];
+	for (rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+		rows.push({Value: "Row " + rowNumber });
+	}
+	return rows;
+}

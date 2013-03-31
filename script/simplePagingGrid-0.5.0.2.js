@@ -43,6 +43,7 @@
 
         init: function() {
             var that = this;
+            that._currentPage = that._settings.pageNumber;
 
             that.$element.empty();
 
@@ -682,6 +683,7 @@
             pageRenderedEvent: null,
             ajaxError: null,
             showHeader: true,
+            pageNumber: 0,
             
             // Event Handlers
             emptyTemplateCreated: null,
