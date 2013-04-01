@@ -1,5 +1,5 @@
 (function() {
-    module("refresh method tests");
+    module("Refresh method tests");
 
     asyncTest("refresh method should change contents", function(assert) {
     	var callCount = 0;
