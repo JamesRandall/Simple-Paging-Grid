@@ -499,10 +499,11 @@
             } else {
                 if (that._showingEmptyTemplate) {
                     that.$element.empty();
+
+                    that._showingEmptyTemplate = false;
                     
                     that._buildTable();
                     that._table.insertBefore(that._buttonBar);
-                    that._showingEmptyTemplate = false;
 
                     if (that._settings.gridCreated !== null) {
                         that._settings.gridCreated();

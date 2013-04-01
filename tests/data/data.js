@@ -36,14 +36,17 @@ function setupNullUrlMock(url, assertions) {
 	});
 }
 
-function createLargeArray(numberOfRows) {
+function createLargeArray(numberOfRows, startAtIndex) {
 	if (numberOfRows === undefined) {
 		numberOfRows = 15;
+	}
+	if (startAtIndex === undefined) {
+		startAtIndex = 0;
 	}
 
 	var rowNumber;
 	var rows = [];
-	for (rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+	for (rowNumber = startAtIndex; rowNumber < (startAtIndex + numberOfRows); rowNumber++) {
 		rows.push({Value: "Row " + rowNumber });
 	}
 	return rows;
