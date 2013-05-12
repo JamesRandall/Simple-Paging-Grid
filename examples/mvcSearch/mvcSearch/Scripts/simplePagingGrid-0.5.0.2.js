@@ -1,6 +1,8 @@
-﻿(function ($) {
+(function ($) {
 
     var pluginName = "simplePagingGrid";
+    var oldSimplePagingGrid = $.fn[pluginName];
+
     function dataPage(data, currentPage, pageSize) {
         return data.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
     }
@@ -41,6 +43,9 @@
 
         init: function() {
             var that = this;
+            that._currentPage = that._settings.pageNumber;
+
+            that.$element.empty();
 
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
@@ -179,6 +184,9 @@
 
         _buildButtonBar: function() {
             var that = this;
+
+            if (that._showingEmptyTemplate) return;
+
             var previousButtonBar = that._buttonBar;
             var totalPages = that._numberOfPages();
             var pageRange = that._getPageRange();
@@ -357,53 +365,29 @@
             }
         },
 
-        _refreshData: function(newDataUrl) {
+        _refreshData: function(newBinding) {
             var sortedData;
             var aVal;
             var bVal;
             var dataToSort;
             var that = this;
 
-            if (newDataUrl !== undefined) {
-                this._settings.dataUrl = newDataUrl;
-                that._currentPage = 0;
+            if (newBinding !== undefined) {
+                if ($.isArray(newBinding)) {
+                    that._settings.data = newBinding;
+                }
+                else {
+                    that._settings.dataUrl = newBinding;
+                    that._currentPage = 0;
+                }
             }
 
             that._currentPage = Math.floor(that._currentPage);
 
-            if (that._settings.data !== null) {
-                dataToSort = null;
-                if ($.isArray(that._settings.data)) {
-                    dataToSort = that._settings.data;
-                } else if ($.isPlainObject(that._settings.data)) {
-                    dataToSort = that._settings.data.currentPage;
-                    that._numberOfRows = that._settings.data.totalRows;
-                }
-                sortedData = that._sortedColumn === null ? dataToSort : dataToSort.sort(function(a, b) {
-                    aVal = that._sortOrder === "asc" ? a[that._sortedColumn] : b[that._sortedColumn];
-                    bVal = that._sortOrder === "asc" ? b[that._sortedColumn] : a[that._sortedColumn];
-                    if ($.isNumeric(aVal)) {
-                        if (aVal < bVal) {
-                            return 1;
-                        } else if (aVal > bVal) {
-                            return -1;
-                        }
-                        return 0;
-                    }
-                    return aVal.localeCompare(bVal);
-                });
-                that._fetchedData = true;
-                that._sourceData = that._settings.data;
-                that._pageData = dataPage(sortedData, that._currentPage, that._settings.pageSize);
-                that._deferredCellTemplateCompilation();
-                that._loadData();
-                that._buildButtonBar();
-
-                if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
-            } else if (that._settings.dataUrl !== null) {
+            if (that._settings.dataUrl !== null) {
                 if (that._pageData === undefined) {
-                    that._pageData = [];
                     that._loadData();
+                    that._pageData = [];
                 }
                 that._showLoading();
 
@@ -461,20 +445,56 @@
                         }
                     });
                 }
-            } else if (that._settings.dataFunction !== null) {
+            }
+            else if (that._settings.dataFunction !== null) {
                 that._fetchedData = true;
                 that._parseSourceData(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
                 that._loadData();
                 that._buildButtonBar();
                 if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
             }
+            else {
+                dataToSort = null;
+                if ($.isArray(that._settings.data)) {
+                    dataToSort = that._settings.data;
+                    that._numberOfRows = that._settings.data.length;
+                } else if ($.isPlainObject(that._settings.data)) {
+                    dataToSort = that._settings.data.currentPage;
+                    that._numberOfRows = that._settings.data.currentPage.length;
+                }
+                sortedData = that._sortedColumn === null ? dataToSort : dataToSort.sort(function(a, b) {
+                    aVal = that._sortOrder === "asc" ? a[that._sortedColumn] : b[that._sortedColumn];
+                    bVal = that._sortOrder === "asc" ? b[that._sortedColumn] : a[that._sortedColumn];
+                    if ($.isNumeric(aVal)) {
+                        if (aVal < bVal) {
+                            return 1;
+                        } else if (aVal > bVal) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                    return aVal.localeCompare(bVal);
+                });
+
+                if (that._numberOfPages() < that._currentPage) {
+                    that._currentPage = that._numberOfPages()-1;
+                }
+
+                that._fetchedData = true;
+                that._sourceData = that._settings.data;
+                that._pageData = that._sourceData !== null ? dataPage(sortedData, that._currentPage, that._settings.pageSize) : [];
+                that._deferredCellTemplateCompilation();
+                that._loadData();
+                that._buildButtonBar();
+
+                if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
+            } 
         },
 
         _loadData: function() {
             var that = this;
-            if (that._pageData.length === 0 && that._settings.templates.emptyTemplate !== null) {
-                that._table.remove();
-                that._buttonBar.remove();
+            if (that._pageData !== undefined && that._pageData.length === 0 && that._settings.templates.emptyTemplate !== null) {
+                that.$element.empty();
                 that._buttonBar = undefined;
                 that._table = undefined;
                 that.$element.append(that._settings.templates.emptyTemplate());
@@ -490,10 +510,11 @@
             } else {
                 if (that._showingEmptyTemplate) {
                     that.$element.empty();
+
+                    that._showingEmptyTemplate = false;
                     
                     that._buildTable();
                     that._table.insertBefore(that._buttonBar);
-                    that._showingEmptyTemplate = false;
 
                     if (that._settings.gridCreated !== null) {
                         that._settings.gridCreated();
@@ -517,7 +538,9 @@
                     }
                 }
 
-                $.each(that._pageData, function(rowIndex, rowData) {
+                var localPageData = that._pageData === undefined ? [] : that._pageData;
+
+                $.each(localPageData, function(rowIndex, rowData) {
                     if (rowIndex < that._settings.pageSize) {
                         var tr = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
                         rowTemplateIndex++;
@@ -554,10 +577,10 @@
                     }
                 }
                 
-                if (that._pageData.length < that._settings.minimumVisibleRows) {
+                if (localPageData.length < that._settings.minimumVisibleRows) {
                     var emptyRowIndex;
                     var emptyRow;
-                    for (emptyRowIndex = that._pageData.length; emptyRowIndex < that._settings.minimumVisibleRows; emptyRowIndex++) {
+                    for (emptyRowIndex = localPageData.length; emptyRowIndex < that._settings.minimumVisibleRows; emptyRowIndex++) {
                         emptyRow = $(that._settings.rowTemplates[rowTemplateIndex](rowTemplateIndex));
                         rowTemplateIndex++;
                         if (rowTemplateIndex >= that._settings.rowTemplates.length) {
@@ -672,6 +695,7 @@
             pageRenderedEvent: null,
             ajaxError: null,
             showHeader: true,
+            pageNumber: 0,
             
             // Event Handlers
             emptyTemplateCreated: null,
@@ -695,6 +719,23 @@
             }
         });
 
+        if (settings.columnKeys === undefined && settings.data !== null && settings.data.length > 0) {
+            var columnKey;
+            settings.columnKeys = [];
+            for(columnKey in settings.data[0]) {
+                settings.columnKeys.push(columnKey);
+            }
+        }
+
+        if (settings.columnNames === undefined) {
+            if (settings.columnKeys !== undefined) {
+                settings.columnNames = settings.columnKeys.slice(0);
+            }
+            else {
+                settings.columnNames = [];
+            }
+        }
+
         return this.each(function () {
             var data = $.data(this, "plugin_" + pluginName);
             if (!data) {
@@ -707,4 +748,9 @@
     };
 
     $.fn[pluginName].Constructor = SimplePagingGrid;
+
+    $.fn[pluginName].noConflict = function () {
+        $.fn[pluginName] = oldSimplePagingGrid;
+        return this
+    }
 })(jQuery);
