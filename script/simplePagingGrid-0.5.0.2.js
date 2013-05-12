@@ -365,16 +365,21 @@
             }
         },
 
-        _refreshData: function(newDataUrl) {
+        _refreshData: function(newBinding) {
             var sortedData;
             var aVal;
             var bVal;
             var dataToSort;
             var that = this;
 
-            if (newDataUrl !== undefined) {
-                this._settings.dataUrl = newDataUrl;
-                that._currentPage = 0;
+            if (newBinding !== undefined) {
+                if ($.isArray(newBinding)) {
+                    that._settings.data = newBinding;
+                }
+                else {
+                    that._settings.dataUrl = newBinding;
+                    that._currentPage = 0;
+                }
             }
 
             that._currentPage = Math.floor(that._currentPage);
@@ -452,9 +457,10 @@
                 dataToSort = null;
                 if ($.isArray(that._settings.data)) {
                     dataToSort = that._settings.data;
+                    that._numberOfRows = that._settings.data.length;
                 } else if ($.isPlainObject(that._settings.data)) {
                     dataToSort = that._settings.data.currentPage;
-                    that._numberOfRows = that._settings.data.totalRows;
+                    that._numberOfRows = that._settings.data.currentPage.length;
                 }
                 sortedData = that._sortedColumn === null ? dataToSort : dataToSort.sort(function(a, b) {
                     aVal = that._sortOrder === "asc" ? a[that._sortedColumn] : b[that._sortedColumn];
@@ -469,6 +475,11 @@
                     }
                     return aVal.localeCompare(bVal);
                 });
+
+                if (that._numberOfPages() < that._currentPage) {
+                    that._currentPage = that._numberOfPages()-1;
+                }
+
                 that._fetchedData = true;
                 that._sourceData = that._settings.data;
                 that._pageData = that._sourceData !== null ? dataPage(sortedData, that._currentPage, that._settings.pageSize) : [];

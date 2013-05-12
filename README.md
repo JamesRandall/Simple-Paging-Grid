@@ -37,6 +37,9 @@ Finally - thanks to the authors of jQuery, Handlebars and Twitter Bootstrap all 
 5. Page Numbers
 <http://www.accidentalfish.com/simplePagingGrid/examples/pageNumbers/index.html>
 
+6. Refreshing a data array
+<http://www.accidentalfish.com/simplePagingGrid/examples/dataArrayRefresh/index.html>
+
 ## Basic Usage
 
 Include the stylesheet simplePagingGrid.css (all this includes are the triangle icons for column sorting)
@@ -130,11 +133,23 @@ Updates the grid with fresh data from the data source.
 
 **Parameter**   |**Description**
 ----------------|-----------------------------------------
-newUrl          |*(Optional)* Supply a new URL for example to update a search parameter
+newBinding      |*(Optional)* Supply a new binding for example to update a search parameter
 
-Example:
+Example using a URL:
   
 	$("#mygrid").simplePagingGrid("refresh", "http://optional.new.url/action");
+	
+Example using a data array:
+
+	var dataArray = [];
+	$("#mygrid").simplePagingGrid("refresh", dataArray);
+	
+When using a data array it is possible to modify the underlying array and call refresh without the parameter, for example assuming sourceArray is the array you first bound the grid to:
+
+	sourceArray.splice(0,1);
+	$("#mygrid").simplePagingGrid("refresh");
+	
+Note that changing binding type is not supported at this time. If you instantiate the grid with a dataUrl then you must continue to use a dataUrl.
 
 ### currentPageData
 
@@ -176,6 +191,8 @@ When binding to an array the array should simply contain a set of objects with t
 		{ "Name": "Apples", "Price": 1.50, "Quantity": 5 },
 		{ "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }
 	]
+	
+If you are binding directly to a data array via the data property (as opposed to an array returned from a URL) then the grid will support page numbering but if you're using the dataUrl then you will need to use the data format outlined below to support page numbering.
 
 ### Object Format
 
@@ -193,6 +210,8 @@ When the data is wrapped within an outer object the grid is able to make use of 
 	}
 	
 You can extend this object model with further data as required by your application and reference this from cell templates. See the section on Cell Templates for further details.
+
+If you are binding directly to a data array via the data property (as opposed to an array returned from a URL) then this object format is not required to support page numbering.
 
 ## Loading Data From A Client Object
 
@@ -379,7 +398,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-30/03/2012 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option
+30/03/2012 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.
 28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility

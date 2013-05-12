@@ -122,4 +122,100 @@
     		}
     	});
     });
+
+    test("refresh method with data array should change contents", function(assert) {
+        var callCount = 0;
+        var data = createLargeArray(10);
+        
+        var div = $("<div></div>");
+        var grid = div.simplePagingGrid({ data: data });
+        assert.equal(div.find("td:first").text(), "Row 0", "Row 0 is present before refresh");
+        
+        var newArray = createLargeArray(10);
+        newArray.splice(0,1);
+        grid.simplePagingGrid("refresh", newArray);
+        assert.notEqual(div.find("td:first").text(), "Row 0", "Row 0 missing after refresh");
+    });
+
+    test("refresh method with change to underlying data array should change contents", function(assert) {
+        var callCount = 0;
+        var data = createLargeArray(10);
+        
+        var div = $("<div></div>");
+        var grid = div.simplePagingGrid({ data: data });
+        assert.equal(div.find("td:first").text(), "Row 0", "Row 0 is present before refresh");
+        data.splice(0,1);
+        grid.simplePagingGrid("refresh");
+        assert.notEqual(div.find("td:first").text(), "Row 0", "Row 0 missing after refresh");
+    });
+
+    test("refresh method with data array adds second page", function(assert) {
+        var callCount = 0;
+        var data = createLargeArray(10);
+        
+        var div = $("<div></div>");
+        var grid = div.simplePagingGrid({ data: data });
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 0.5, "next page button is disabled");
+        
+        var newArray = createLargeArray(10);
+        newArray.push({Value: "New row"});
+        grid.simplePagingGrid("refresh", newArray);
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 1.0, "next page button is enabled");
+    });
+
+    test("refresh method with add to underlying data array adds second page", function(assert) {
+        var callCount = 0;
+        var data = createLargeArray(10);
+        
+        var div = $("<div></div>");
+        var grid = div.simplePagingGrid({ data: data });
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 0.5, "next page button is disabled");
+        
+        data.push({Value: "New row"});
+        grid.simplePagingGrid("refresh");
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 1.0, "next page button is enabled");
+    });
+
+    test("refresh method with data array removes second page", function(assert) {
+        var callCount = 0;
+        var data = createLargeArray(11);
+        
+        var div = $("<div></div>");
+        var grid = div.simplePagingGrid({ data: data });
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 1, "next page button is enabled");
+        
+        var newArray = createLargeArray(10);
+        grid.simplePagingGrid("refresh", newArray);
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 0.5, "next page button is disabled");
+    });
+
+    test("refresh method with underlying data array removes second page", function(assert) {
+        var callCount = 0;
+        var data = createLargeArray(11);
+        
+        var div = $("<div></div>");
+        var grid = div.simplePagingGrid({ data: data });
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 1, "next page button is enabled");
+        
+        data.splice(0,1);
+        grid.simplePagingGrid("refresh");
+        var buttonbar = grid.children("div.clearfix");
+        var nextPageBtn = buttonbar.find('li a.next i');
+        assert.equal(nextPageBtn.css('opacity'), 0.5, "next page button is disabled");
+    });
+
 })();
