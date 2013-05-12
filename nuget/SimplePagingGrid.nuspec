@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SimplePagingGrid</id>
-    <version>0.5.0.1</version>
+    <version>0.5.0.2</version>
     <title>Simple Paging Grid</title>
     <authors>James Randall</authors>
     <owners>James Randall</owners>
@@ -10,8 +10,8 @@
     <projectUrl>https://github.com/JamesRandall/Simple-Paging-Grid</projectUrl>
     <iconUrl>http://www.accidentalfish.com/simplePagingGridIcon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>CSS friendly JavaScript grid built as a jQuery plugin and making use of the Handlebars templating library</description>
-    <releaseNotes>Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example. 0.5.0.1 fixes a bug with the empty template and url binding.</releaseNotes>
+    <description>Bootstrap based JavaScript grid built as a jQuery plugin and making use of the Handlebars templating library</description>
+    <releaseNotes>Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.</releaseNotes>
     <copyright>Copyright 2013 Accidental Fish Ltd.</copyright>
     <tags>grid jquery javascript handlebars bootstrap simple json mvc asp.net</tags>
     <dependencies>
