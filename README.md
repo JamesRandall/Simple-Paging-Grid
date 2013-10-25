@@ -2,6 +2,8 @@
 
 Simple Paging Grid is a lightweight CSS friendly readonly grid that supports both preloaded and dynamically loaded data and is designed to work with the Bootstrap <http://getbootstrap.com/> library. With the adoption of Bootstrap as the default template for ASP.Net and MVC applications in Visual Studio 2013 Simple Paging Grid now supports rapid prototyping within that environment straight out the box - just add the NuGet package and go.
 
+*Please note that Simple Paging Grid by default uses Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2 (an example is provided in the examples folder)*
+
 ![Screenshot]
 (http://www.accidentalfish.com/simple-paging-grid-screenshot.png)
 
@@ -91,6 +93,7 @@ Like many jQuery plugins the Simple Paging Grid is configured using an options d
 **Option**      |**Description**
 ----------------|-----------------------------------------
 ajaxError       |*(Optional)* Called in the event of errors contacting the server. Same format as the jQuery ajax error handler.
+bootstrapVersion|*(Optional)* Set to 2 to use Bootstrap 2 or 3 for version 3. Defaults to 3.
 cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Handlebars (see below).
 cellContainerTemplates |*(Optional)* Allows the containers for each cell to be rendered with a custom style. By default cell containers are plain td tags.
 columnDefinitionTemplates|*(Optional)* Allows column tags to be defined before the thead block.
@@ -395,7 +398,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-25/10/2013 |0.6.0.0 |Now works with and requires Bootstrap 3, removed the need for the grids own CSS file.
+25/10/2013 |0.6.0.0 |Now works with Bootstrap 3 by default (to use Bootstrap 2 see the bootstrapVersion setting), removed the need for the grids own CSS file.
 30/03/2013 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.
 28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
@@ -404,9 +407,18 @@ Date       |Version |Changes
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
 
-## Breaking Changes in 0.4 to 0.6
+## Breaking Changes in 0.4 or 0.5 to 0.6
 
-The grid now requires Bootstrap 3.
+The grid now defaults to using Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2:
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            bootstrapVersion: 2,
+            data: [
+                { "Name": "Pineapple", "Price": 1.50, "Quantity": 2 },
+                { "Name": "Banana", "Price": 0.30, "Quantity": 5 }]
+        });
+    });
 
 ## Breaking Changes 0.3 to 0.4
 

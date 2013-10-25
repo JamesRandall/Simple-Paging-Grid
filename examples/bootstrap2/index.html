@@ -9,6 +9,15 @@
 
     <!-- Le styles -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
     <script type="text/javascript" src="script/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="script/handlebars-1.0.rc.1.js"></script>
     <script type="text/javascript" src="../../script/simplePagingGrid-0.6.0.0.js"></script>
@@ -20,7 +29,7 @@
 		            columnWidths: ["50%", "25%", "25%"],
 		            sortable: [true, true, true],
 		            initialSortColumn: "Name",
-		            useBootstrap2: true,
+		            bootstrapVersion: 2,
 		            data: [
 		                { "OrderLineID": 1, "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
 						{ "OrderLineID": 2, "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
@@ -49,20 +58,24 @@
 	</script>
 </head>
 <body>
-    <header>
-      <div class="navbar navbar-default" role="navigation">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">Simple Paging Grid - Sorting Example</a>
-        </div>
-      </div>
-    </header>
-    <section id="main">
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<p>The grid below demonstrates sorting.</p>
-				<div id="exampleGrid"></div>
-			</div>
-		</div>
-    </section>
+    <div class="page">
+        <header>
+            <div class="navbar navbar-fixed-top">
+              <div class="navbar-inner">
+                <div class="container-fluid">
+                  <a class="brand" href="#">Simple Paging Grid - Using Bootstrap 2</a>
+                </div>
+              </div>
+            </div>
+        </header>
+        <section id="main">
+                        <div class="container-fluid">
+                                <div class="row-fluid">
+                                        <p>The grid below is styled using Bootstrap 2 by setting the bootstrapVersion property to 2.</p>
+                                        <div id="exampleGrid"></div>
+                                </div>
+                        </div>
+        </section>
+    </div>
 </body>
 </html>
