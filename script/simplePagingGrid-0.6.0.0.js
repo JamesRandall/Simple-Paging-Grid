@@ -548,7 +548,7 @@
                         }
                         $.each(that._settings.columnKeys, function(index, propertyName) {
                             var td;
-                            if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates !== null) {
+                            if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates[index] !== null) {
                                 td = $(that._settings.cellContainerTemplates[index](index));
                             } else {
                                 td = $('<td>');
