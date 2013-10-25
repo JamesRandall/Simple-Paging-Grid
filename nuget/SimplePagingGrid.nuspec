@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SimplePagingGrid</id>
-    <version>0.5.0.2</version>
+    <version>0.6.0.0</version>
     <title>Simple Paging Grid</title>
     <authors>James Randall</authors>
     <owners>James Randall</owners>
@@ -10,13 +10,14 @@
     <projectUrl>https://github.com/JamesRandall/Simple-Paging-Grid</projectUrl>
     <iconUrl>http://www.accidentalfish.com/simplePagingGridIcon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Bootstrap based JavaScript grid built as a jQuery plugin and making use of the Handlebars templating library</description>
-    <releaseNotes>Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.</releaseNotes>
+    <description>Bootstrap based JavaScript grid built as a jQuery plugin and making use of the Handlebars templating library. Super simple to use and very customizable.</description>
+    <releaseNotes>Support for Bootstrap 3, fixes for issues reported via GitHub.</releaseNotes>
     <copyright>Copyright 2013 Accidental Fish Ltd.</copyright>
-    <tags>grid jquery javascript handlebars bootstrap simple json mvc asp.net</tags>
+    <tags>grid datagrid jquery plugins widgets javascript handlebars bootstrap simple json mvc asp.net</tags>
     <dependencies>
       <dependency id="Handlebars.js" version="1.0.7" />
       <dependency id="jQuery" version="1.8.3" />
+      <dependency id="Bootstrap" version="3.0.0" />
     </dependencies>
   </metadata>
 </package>
