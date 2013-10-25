@@ -299,6 +299,10 @@
             if (hadFocus) {
                 that._pageTextPicker.focus();
             }
+
+            if (!that._settings.pagingEnabled) {
+                that._buttonBar.hide();
+            }
         },
 
         _sizeLoadingOverlay: function() {
@@ -696,6 +700,7 @@
             showHeader: true,
             pageNumber: 0,
             bootstrapVersion: 3,
+            pagingEnabled: true,
             
             // Event Handlers
             emptyTemplateCreated: null,

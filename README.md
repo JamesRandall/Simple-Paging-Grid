@@ -110,6 +110,7 @@ numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum numbe
 pageNumber      |*(Optional)* Initial page number, defaults to 0.
 pageRenderedEvent|*(Optional)* A function that is called and supplied with the page data straight after the page has been rendered.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
+pagingEnabled   |*(Optional)* Is paging enabled, if disbaled the button bar is hidden. Defaults to true.
 postDataFunction|*(Optional)* If supplied then the HTTP POST verb will be used for communicating with the server via the URL set in dataUrl. This function should return an object containing the data you want to be in the payload (there is no need to include the page number etc. as this will be supplied by the grid).
 rowTemplates|*(Optional)* If supplied allows rows to be styled. By default the grid simply emits tr tags. Row templates are cycled through - a typical use would be to supply two row templates for alternate row background shading.
 showLoadingOverlay|*(Optional)* If set to true then when data is being retrieved from a URL a loading overlay is shown. Defaults to true.
