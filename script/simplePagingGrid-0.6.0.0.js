@@ -387,7 +387,22 @@
 
             that._currentPage = Math.floor(that._currentPage);
 
-            if (that._settings.dataUrl !== null) {
+            if (that._settings.ajaxDataFunction !== null) {
+                that._settings.ajaxDataFunction(
+                    that._currentPage,
+                    that._settings.pageSize,
+                    that._sortedColumn,
+                    that._sortOrder,
+                    function(jsonData) {
+                        that._fetchedData = true;
+                        that._parseSourceData(jsonData);
+                        that._loadData();
+                        that._buildButtonBar();
+                        that._hideLoading();
+                        if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
+                });
+            }
+            else if (that._settings.dataUrl !== null) {
                 if (that._pageData === undefined) {
                     that._loadData();
                     that._pageData = [];
@@ -686,6 +701,7 @@
             sortOrder: "asc",
             initialSortColumn: null,
             tableClass: "table",
+            ajaxDataFunction: null,
             dataFunction: null,
             dataUrl: null,
             data: null,

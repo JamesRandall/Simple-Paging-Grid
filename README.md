@@ -2,6 +2,8 @@
 
 Simple Paging Grid is a lightweight CSS friendly readonly grid that supports both preloaded and dynamically loaded data and is designed to work with the Bootstrap <http://getbootstrap.com/> library. With the adoption of Bootstrap as the default template for ASP.Net and MVC applications in Visual Studio 2013 Simple Paging Grid now supports rapid prototyping within that environment straight out the box - just add the NuGet package and go.
 
+This latest version of the grid incorporates much of the feedback that has been given to me on GitHub and for which I am really grateful. Time pressures meant it took me a while to get this out but I'm still committed to supporting Simple Paging Grid - I use it myself extensively.
+
 *Please note that Simple Paging Grid by default uses Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2 (an example is provided in the examples folder).*
 
 ![Screenshot]
@@ -92,6 +94,7 @@ Like many jQuery plugins the Simple Paging Grid is configured using an options d
 
 **Option**      |**Description**
 ----------------|-----------------------------------------
+ajaxDataFunction|*(Optional)* Allows a custom remote call to be made to retrieve data. See databinding below.
 ajaxError       |*(Optional)* Called in the event of errors contacting the server. Same format as the jQuery ajax error handler.
 bootstrapVersion|*(Optional)* Set to 2 to use Bootstrap 2 or 3 for version 3. Defaults to 3.
 cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Handlebars (see below).
@@ -174,7 +177,8 @@ Example:
 Data can be loaded into the grid in three different ways:
 
 * Directly to an object constructed in the client
-* To a JSON object retrieved via a remote service
+* To a JSON object retrieved via a remote service using a URL
+* To a JSON object retrieved via a remote service using a custom function
 * To an object returned from a function
 
 Details, and examples, of how to use these options are shown below.
@@ -255,6 +259,25 @@ In response to this your server should return the JSON data for the page, for ex
     ]
 
 Note that if building SQL dynamically you should take care to protect from injection attacks and your server should enforce a maximum page size to prevent dangerously large pages of data being requested by an attacker.
+
+## Loading Data From A Remote Server Using A Custom Function
+
+If you have an existing server interface that doesn't the data format or interface as described in the above section you can supply a function to the grid component and handle the remote data call yourself. You do this using the ajaxDataFunction property as follows:
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            columnNames: ["Name", "Price ($)", "Quantity"],
+            columnKeys: ["Name", "Price", "Quantity"],
+            sortable: [true, true, true],
+            initialSortColumn: "Name",
+            ajaxDataFunction: function(pageNumber, pageSize, sortColumn, sortOrder, callback) {
+                $.post(myUrl, {searchQuery: query, limit: pageSize, start: pageNumber}.done(function(response)) {
+                    callback(response.data);
+                });
+            }
+        });
+    });
+
 
 ## Loading Data From A Function
 
