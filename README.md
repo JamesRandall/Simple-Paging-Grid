@@ -431,7 +431,7 @@ Date       |Version |Changes
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
 
-## Breaking Changes in 0.4 or 0.5 to 0.6
+## Breaking Changes in 0.5 to 0.6
 
 The grid now defaults to using Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2:
 
