@@ -152,7 +152,7 @@
             if (this._numberOfRows !== null) {
                 return Math.ceil(this._numberOfRows / this._settings.pageSize);
             }
-            return Number.MAX_VALUE;
+            return 0;
         },
 
         _getPageRange: function() {
