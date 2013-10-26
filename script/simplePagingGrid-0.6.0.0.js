@@ -635,9 +635,9 @@
                                     {{#if showGotoPage}} \
                                         <div class="pull-right col-lg-1"> \
                                             <div class="input-group"> \
-                                                <input style="width: 3em;" class="form-control" type="text" value="{{currentPage}}" /> \
+                                                <input style="width: 3em;" class="form-control pagetextpicker" type="text" value="{{currentPage}}" /> \
                                                 <span class="input-group-btn"> \
-                                                    <button class="btn btn-default" type="button">Go</button> \
+                                                    <button class="btn btn-default pagetextpickerbtn" type="button">Go</button> \
                                                 </span> \
                                             </div> \
                                         </div> \
