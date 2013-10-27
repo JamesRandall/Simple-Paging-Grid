@@ -13,14 +13,14 @@
     }
 
     function defaultUrlWriter(currentPage, pageSize, sortColumn, sortOrder) {
-        var anchor = "#{" + currentPage + "," + pageSize + "," + sortColumn + "," + sortOrder + "}";
-        var state = {
-            currentPage: currentPage,
-            pageSize: pageSize,
-            sortColumn: sortColumn,
-            sortOrder: sortOrder
-        };
-        window.history.pushState(state, null, rootLocation + anchor);
+        var anchor;
+        if (sortColumn !== null) {
+            anchor = "#{" + currentPage + "," + sortColumn + "," + sortOrder + "}";
+        }
+        else {
+            anchor = "#{" + currentPage + "," + sortOrder + "}";
+        }
+        window.history.pushState(null, null, rootLocation + anchor);
     }
 
     function defaultUrlReader() {
@@ -29,9 +29,8 @@
             var array = commaDelimited.split(',');
             return {
                 currentPage: array[0] * 1,
-                pageSize: array[1] * 1,
-                sortColumn: array[2],
-                sortOrder: array[3]
+                sortColumn: array.length > 2 ? array[1] : null,
+                sortOrder: array.length > 2 ? array[2] : array[1]
             };
         }
         return null;
@@ -71,6 +70,9 @@
         _showingEmptyTemplate: false,
         _compiledCellTemplates: null,
 
+        _originalSortOrder: null,
+        _originalSortColumn: null,
+
         init: function() {
             var that = this;
             that._currentPage = that._settings.pageNumber;
@@ -79,9 +81,9 @@
 
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
-            that._parseUrl(false);
+            that._parseUrl(false, false);
             that._buildTable();
-            that._refreshData();
+            that._refreshData(false);
 
             that._registerHistoryEvents();
 
@@ -216,7 +218,7 @@
             var that = this;
             if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
                 window.addEventListener("popstate", function() {
-                    that._parseUrl(true);
+                    that._parseUrl(true, false);
                 });
             }
         },
@@ -228,15 +230,23 @@
             }
         },
 
-        _parseUrl: function(refresh) {
+        _parseUrl: function(refresh, updateUrl) {
             var that = this;
             if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
                 var result = that._settings.urlReader();
                 if (result !== null) {
                     that._currentPage = result.currentPage;
-                    if (refresh) {
-                        that._refreshData();
-                    }
+                    that._sortOrder = result.sortOrder;
+                    //that._sortedColumn = result.sortColumn;
+                }
+                else {
+                    that._currentPage = that._settings.pageNumber;
+                    that._sortOrder = that._settings.sortOrder;
+                    //that._sortedColumn = that._settings.initialSortColumn;
+                }
+
+                if (refresh) {
+                    that._refreshData(updateUrl);
                 }
             }
         },
@@ -432,12 +442,16 @@
             }
         },
 
-        _refreshData: function(newBinding) {
+        _refreshData: function(updateUrl, newBinding) {
             var sortedData;
             var aVal;
             var bVal;
             var dataToSort;
             var that = this;
+
+            if (updateUrl === undefined) {
+                updateUrl = true;
+            }
 
             if (newBinding !== undefined) {
                 if ($.isArray(newBinding)) {
@@ -463,7 +477,9 @@
                         that._loadData();
                         that._buildButtonBar();
                         that._hideLoading();
-                        that._updateUrl();
+                        if (updateUrl) {
+                            that._updateUrl();
+                        }
                         if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                 });
             }
@@ -494,7 +510,9 @@
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
-                            that._updateUrl();
+                            if (updateUrl) {
+                                that._updateUrl();
+                            }
                             if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                         },
                         error: function(jqXhr, textStatus, errorThrown) {
@@ -520,7 +538,9 @@
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
-                            that._updateUrl();
+                            if (updateUrl) {
+                                that._updateUrl();
+                            }
                             if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                         },
                         error: function(jqXhr, textStatus, errorThrown) {
@@ -564,7 +584,9 @@
                 that._deferredCellTemplateCompilation();
                 that._loadData();
                 that._buildButtonBar();
-                that._updateUrl();
+                if (updateUrl) {
+                    that._updateUrl();
+                }
 
                 if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
             } 
@@ -681,7 +703,7 @@
         // $("#grid").simplePagingGrid("refresh", "http://my.data.url/action")
 
         refresh: function(optionalUrl) {
-            this._refreshData(optionalUrl);
+            this._refreshData(true, optionalUrl);
         },
 
         currentPageData: function(callback) {
