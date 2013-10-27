@@ -421,7 +421,7 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-25/10/2013 |0.6.0.0 |Now works with Bootstrap 3 by default (to use Bootstrap 2 set the bootstrapVersion property to 2), removed the need for the grids own CSS file, addressed GitHub logged issues, updated dataFunction to support a callback approach, resolved issue with emptyTemplate and null results.
+25/10/2013 |0.6.0.0 |Now works with Bootstrap 3 by default (to use Bootstrap 2 set the bootstrapVersion property to 2), removed the need for the grids own CSS file, addressed GitHub logged issues, updated dataFunction to support a callback approach, resolved issue with emptyTemplate and null results, added support for URL updating to enable back and forward button behaviour.
 30/03/2013 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.
 28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
