@@ -2,13 +2,25 @@
 
     var pluginName = "simplePagingGrid";
     var oldSimplePagingGrid = $.fn[pluginName];
+    var rootLocation = window.location.href.replace(window.location.hash, '');
 
     function dataPage(data, currentPage, pageSize) {
         return data.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
     }
 
+    function supportsHistoryApi() {
+        return !!(window.history && history.pushState);
+    }
+
     function defaultUrlWriter(currentPage, pageSize, sortColumn, sortOrder) {
-        location.hash="{" + currentPage + "," + pageSize + "," + sortColumn + "," + sortOrder + "}";
+        var anchor = "#{" + currentPage + "," + pageSize + "," + sortColumn + "," + sortOrder + "}";
+        var state = {
+            currentPage: currentPage,
+            pageSize: pageSize,
+            sortColumn: sortColumn,
+            sortOrder: sortOrder
+        };
+        window.history.pushState(state, null, rootLocation + anchor);
     }
 
     function defaultUrlReader() {
@@ -67,9 +79,11 @@
 
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
-            that._parseUrl();
+            that._parseUrl(false);
             that._buildTable();
             that._refreshData();
+
+            that._registerHistoryEvents();
 
             that._table.insertBefore(that._buttonBar);
             $(window).resize(that._sizeLoadingOverlay);
@@ -198,19 +212,31 @@
             };
         },
 
+        _registerHistoryEvents: function() {
+            var that = this;
+            if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
+                window.addEventListener("popstate", function() {
+                    that._parseUrl(true);
+                });
+            }
+        },
+
         _updateUrl: function() {
             var that = this;
-            if (that._settings.urlUpdatingEnabled) {
+            if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
                 that._settings.urlWriter(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder);
             }
         },
 
-        _parseUrl: function() {
+        _parseUrl: function(refresh) {
             var that = this;
-            if (that._settings.urlUpdatingEnabled) {
+            if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
                 var result = that._settings.urlReader();
                 if (result !== null) {
                     that._currentPage = result.currentPage;
+                    if (refresh) {
+                        that._refreshData();
+                    }
                 }
             }
         },
