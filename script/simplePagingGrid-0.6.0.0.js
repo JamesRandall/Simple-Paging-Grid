@@ -7,6 +7,24 @@
         return data.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
     }
 
+    function defaultUrlWriter(currentPage, pageSize, sortColumn, sortOrder) {
+        location.hash="{" + currentPage + "," + pageSize + "," + sortColumn + "," + sortOrder + "}";
+    }
+
+    function defaultUrlReader() {
+        if (location.hash.length > 0) {
+            var commaDelimited = location.hash.substring(2, location.hash.length-1);
+            var array = commaDelimited.split(',');
+            return {
+                currentPage: array[0] * 1,
+                pageSize: array[1] * 1,
+                sortColumn: array[2],
+                sortOrder: array[3]
+            };
+        }
+        return null;
+    }
+
     var SimplePagingGrid = function(element, options) {
         this._settings = options;
         this.$element = $(element);
@@ -49,9 +67,8 @@
 
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
-
+            that._parseUrl();
             that._buildTable();
-            
             that._refreshData();
 
             that._table.insertBefore(that._buttonBar);
@@ -179,6 +196,23 @@
                 firstPage: firstPage,
                 lastPage: lastPage
             };
+        },
+
+        _updateUrl: function() {
+            var that = this;
+            if (that._settings.urlUpdatingEnabled) {
+                that._settings.urlWriter(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder);
+            }
+        },
+
+        _parseUrl: function() {
+            var that = this;
+            if (that._settings.urlUpdatingEnabled) {
+                var result = that._settings.urlReader();
+                if (result !== null) {
+                    that._currentPage = result.currentPage;
+                }
+            }
         },
 
         _buildButtonBar: function() {
@@ -403,6 +437,7 @@
                         that._loadData();
                         that._buildButtonBar();
                         that._hideLoading();
+                        that._updateUrl();
                         if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                 });
             }
@@ -433,6 +468,7 @@
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
+                            that._updateUrl();
                             if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                         },
                         error: function(jqXhr, textStatus, errorThrown) {
@@ -458,6 +494,7 @@
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
+                            that._updateUrl();
                             if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                         },
                         error: function(jqXhr, textStatus, errorThrown) {
@@ -501,6 +538,7 @@
                 that._deferredCellTemplateCompilation();
                 that._loadData();
                 that._buildButtonBar();
+                that._updateUrl();
 
                 if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
             } 
@@ -713,6 +751,9 @@
             pageNumber: 0,
             bootstrapVersion: 3,
             pagingEnabled: true,
+            urlWriter: defaultUrlWriter,
+            urlReader: defaultUrlReader,
+            urlUpdatingEnabled: true,
             
             // Event Handlers
             emptyTemplateCreated: null,
