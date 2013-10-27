@@ -336,6 +336,10 @@
                 this._pageData = sourceData.currentPage;
                 this._numberOfRows = sourceData.totalRows;
             }
+            else if (sourceData === null || sourceData === undefined) {
+                this._pageData = [];
+                this._numberOfRows= 0;
+            }
             this._deferredCellTemplateCompilation();
         },
 
@@ -504,7 +508,7 @@
 
         _loadData: function() {
             var that = this;
-            if (that._pageData !== undefined && that._pageData.length === 0 && that._settings.templates.emptyTemplate !== null) {
+            if (that._pageData !== undefined && that._pageData.length === 0 && that._currentPage == 0 && that._settings.templates.emptyTemplate !== null) {
                 that.$element.empty();
                 that._buttonBar = undefined;
                 that._table = undefined;

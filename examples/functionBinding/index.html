@@ -32,7 +32,7 @@
 						{ "OrderLineID": 12, "Name": "Strawberry", "Price": 1.10, "Quantity": 40, "CallIndex":callIndex },
 						{ "OrderLineID": 13, "Name": "Oranges", "Price": 0.20, "Quantity": 8, "CallIndex":callIndex },
 						{ "OrderLineID": 14, "Name": "Apples", "Price": 1.50, "Quantity": 5, "CallIndex":callIndex },
-						{ "OrderLineID": 15, "Name": "Raspberries", "Price": 1.50, "Quantity": 20, "CallIndex":callIndex }
+						{ "OrderLineID": 15, "Name": "Raspberries", "Price": 1.50, "Quantity": 20, "CallIndex":callIndex },
 					];
 					callback(functionData.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize));
 		        };
@@ -42,7 +42,10 @@
 		            columnKeys: ["Name", "Price", "Quantity", "CallIndex"],
 		            columnWidths: ["50%", "20%", "20%", "10%"],
 		            dataFunction: getDataFunction,
-		            minimumVisibleRows: 10
+		            minimumVisibleRows: 10,
+		            templates: {
+		            	emptyTemplate: '<p>Empty</p>'
+		            }
 		        });
 		    });
 	</script>
