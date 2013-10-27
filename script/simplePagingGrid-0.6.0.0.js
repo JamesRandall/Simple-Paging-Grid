@@ -624,11 +624,11 @@
     $.fn[pluginName] = function (options) {
         var functionArguments = arguments;
         var templates = $.extend({
-            buttonBarTemplate: '<div class="clearfix"> \
+            buttonBarTemplate: '<div class="clearfix form-inline"> \
                                     {{#if showGotoPage}} \
-                                        <div class="pull-right col-lg-1"> \
-                                            <div class="input-group"> \
-                                                <input style="width: 3em;" class="form-control pagetextpicker" type="text" value="{{currentPage}}" /> \
+                                        <div class="pull-right form-group" style="padding-left: 1em;"> \
+                                            <div class="input-group" style="width: 110px;"> \
+                                                <input class="form-control pagetextpicker" type="text" value="{{currentPage}}" /> \
                                                 <span class="input-group-btn"> \
                                                     <button class="btn btn-default pagetextpickerbtn" type="button">Go</button> \
                                                 </span> \
