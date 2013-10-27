@@ -808,7 +808,8 @@
 
         return this.each(function () {
             var data = $.data(this, "plugin_" + pluginName);
-            if (!data) {
+            var isMethodCall = functionArguments.length > 0 && (typeof functionArguments[0] == 'string' || functionArguments[0] instanceof String);
+            if (!data || !isMethodCall) {
                 $.data(this, "plugin_" + pluginName, new SimplePagingGrid( this, settings ));
             }
             else {
