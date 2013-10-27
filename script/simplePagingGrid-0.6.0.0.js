@@ -387,8 +387,8 @@
 
             that._currentPage = Math.floor(that._currentPage);
 
-            if (that._settings.ajaxDataFunction !== null) {
-                that._settings.ajaxDataFunction(
+            if (that._settings.dataFunction !== null) {
+                that._settings.dataFunction(
                     that._currentPage,
                     that._settings.pageSize,
                     that._sortedColumn,
@@ -463,14 +463,7 @@
                         }
                     });
                 }
-            }
-            else if (that._settings.dataFunction !== null) {
-                that._fetchedData = true;
-                that._parseSourceData(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
-                that._loadData();
-                that._buildButtonBar();
-                if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
-            }
+            } 
             else {
                 dataToSort = null;
                 if ($.isArray(that._settings.data)) {
@@ -701,7 +694,6 @@
             sortOrder: "asc",
             initialSortColumn: null,
             tableClass: "table",
-            ajaxDataFunction: null,
             dataFunction: null,
             dataUrl: null,
             data: null,

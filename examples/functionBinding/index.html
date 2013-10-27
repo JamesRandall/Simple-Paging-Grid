@@ -15,7 +15,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 		        var callIndex = 0;
-		        function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder) {
+		        function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder, callback) {
 		            callIndex++;
 		            var functionData = [
 		                { "OrderLineID": 1, "Name": "Pineapple", "Price": 1.50, "Quantity": 4, "CallIndex":callIndex },
@@ -34,7 +34,7 @@
 						{ "OrderLineID": 14, "Name": "Apples", "Price": 1.50, "Quantity": 5, "CallIndex":callIndex },
 						{ "OrderLineID": 15, "Name": "Raspberries", "Price": 1.50, "Quantity": 20, "CallIndex":callIndex }
 					];
-					return functionData.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize);
+					callback(functionData.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize));
 		        };
 		    
 		        $("#exampleGrid").simplePagingGrid({

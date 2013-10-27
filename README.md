@@ -94,7 +94,6 @@ Like many jQuery plugins the Simple Paging Grid is configured using an options d
 
 **Option**      |**Description**
 ----------------|-----------------------------------------
-ajaxDataFunction|*(Optional)* Allows a custom remote call to be made to retrieve data. See databinding below.
 ajaxError       |*(Optional)* Called in the event of errors contacting the server. Same format as the jQuery ajax error handler.
 bootstrapVersion|*(Optional)* Set to 2 to use Bootstrap 2 or 3 for version 3. Defaults to 3.
 cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Handlebars (see below).
@@ -104,7 +103,7 @@ columnKeys      |An array of property names within the data block, one for each 
 columnNames     |An array of titles for the column headers
 columnWidths    |*(Optional)* The width of each column either absolute or percentages
 data            |If you're using a client side data model then the data in the form of an array of objects should be supplied via this property.
-dataFunction    |Data can be sourced from a function
+dataFunction    |Data can be sourced from a function - this can be client data or a custom ajax call.
 dataUrl         |If you want to fetch pages of data dynamically from a web server then the URL for the data source should be supplied via this property. See below.
 headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Handlebars (see below).
 initialSortColumn|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
@@ -262,7 +261,7 @@ Note that if building SQL dynamically you should take care to protect from injec
 
 ## Loading Data From A Remote Server Using A Custom Function
 
-If you have an existing server interface that doesn't the data format or interface as described in the above section you can supply a function to the grid component and handle the remote data call yourself. You do this using the ajaxDataFunction property as follows:
+If you have an existing server interface that doesn't the data format or interface as described in the above section you can supply a function to the grid component and handle the remote data call yourself. You do this using the dataFunction property as follows:
 
     $(document).ready(function() {
         $("#exampleGrid").simplePagingGrid({
@@ -270,7 +269,7 @@ If you have an existing server interface that doesn't the data format or interfa
             columnKeys: ["Name", "Price", "Quantity"],
             sortable: [true, true, true],
             initialSortColumn: "Name",
-            ajaxDataFunction: function(pageNumber, pageSize, sortColumn, sortOrder, callback) {
+            dataFunction: function(pageNumber, pageSize, sortColumn, sortOrder, callback) {
                 $.post(myUrl, {searchQuery: query, limit: pageSize, start: pageNumber}.done(function(response)) {
                     callback(response.data);
                 });
@@ -279,9 +278,9 @@ If you have an existing server interface that doesn't the data format or interfa
     });
 
 
-## Loading Data From A Function
+## Loading Client Data From A Function
 
-To load data from a function then a function should be supplied to the datagrid as shown below:
+To load client data from a function then a function should be supplied to the datagrid as shown below:
 
     $(document).ready(function() {
         $("#exampleGrid").simplePagingGrid({
@@ -295,14 +294,14 @@ To load data from a function then a function should be supplied to the datagrid 
 
 The function will be passed the page number, page size, sort column and sort order in the same manner as URL data loading and should return an object structured in the same way:
 
-    function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder) {
-        return [
-		    { "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
-			{ "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
-			{ "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
-			{ "Name": "Apples", "Price": 1.50, "Quantity": 5 },
-			{ "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }];
-	};
+    function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder,callback) {
+        callback([
+            { "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+            { "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+            { "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+            { "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+            { "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }];
+    });
 
 ## Cell Templates
 
@@ -443,6 +442,8 @@ The grid now defaults to using Bootstrap 3. To continue to use Bootstrap 2 set t
                 { "Name": "Banana", "Price": 0.30, "Quantity": 5 }]
         });
     });
+
+The dataFunction has been updated to use a callback rather than the straight return of data to enable custom Ajax calls to make. It can still be used in pure client models - see the existing dataFunction example.
 
 ## Breaking Changes 0.3 to 0.4
 
