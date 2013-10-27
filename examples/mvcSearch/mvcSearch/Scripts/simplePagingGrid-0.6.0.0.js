@@ -2,9 +2,38 @@
 
     var pluginName = "simplePagingGrid";
     var oldSimplePagingGrid = $.fn[pluginName];
+    var rootLocation = window.location.href.replace(window.location.hash, '');
 
     function dataPage(data, currentPage, pageSize) {
         return data.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
+    }
+
+    function supportsHistoryApi() {
+        return !!(window.history && history.pushState);
+    }
+
+    function defaultUrlWriter(currentPage, sortColumn, sortOrder) {
+        var anchor;
+        if (sortColumn !== null) {
+            anchor = "#{" + currentPage + "," + sortColumn + "," + sortOrder + "}";
+        }
+        else {
+            anchor = "#{" + currentPage + "," + sortOrder + "}";
+        }
+        window.history.pushState(null, null, rootLocation + anchor);
+    }
+
+    function defaultUrlReader() {
+        if (location.hash.length > 0) {
+            var commaDelimited = location.hash.substring(2, location.hash.length-1);
+            var array = commaDelimited.split(',');
+            return {
+                currentPage: array[0] * 1,
+                sortColumn: array.length > 2 ? array[1] : null,
+                sortOrder: array.length > 2 ? array[2] : array[1]
+            };
+        }
+        return null;
     }
 
     var SimplePagingGrid = function(element, options) {
@@ -41,6 +70,9 @@
         _showingEmptyTemplate: false,
         _compiledCellTemplates: null,
 
+        _originalSortOrder: null,
+        _originalSortColumn: null,
+
         init: function() {
             var that = this;
             that._currentPage = that._settings.pageNumber;
@@ -49,10 +81,11 @@
 
             that._sortOrder = this._settings.sortOrder;
             that._sortedColumn = this._settings.initialSortColumn;
-
+            that._parseUrl(false, false);
             that._buildTable();
-            
-            that._refreshData();
+            that._refreshData(false);
+
+            that._registerHistoryEvents();
 
             that._table.insertBefore(that._buttonBar);
             $(window).resize(that._sizeLoadingOverlay);
@@ -179,6 +212,52 @@
                 firstPage: firstPage,
                 lastPage: lastPage
             };
+        },
+
+        _registerHistoryEvents: function() {
+            var that = this;
+            if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
+                window.addEventListener("popstate", function() {
+                    that._parseUrl(true, false);
+                });
+            }
+        },
+
+        _updateUrl: function() {
+            var that = this;
+            if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
+                that._settings.urlWriter(that._currentPage, that._sortedColumn, that._sortOrder);
+            }
+        },
+
+        _parseUrl: function(refresh, updateUrl) {
+            var that = this;
+            if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
+                var result = that._settings.urlReader();
+                if (result !== null) {
+                    that._currentPage = result.currentPage;
+                    that._sortOrder = result.sortOrder;
+                    that._sortedColumn = result.sortColumn;
+                }
+                else {
+                    that._currentPage = that._settings.pageNumber;
+                    that._sortOrder = that._settings.sortOrder;
+                    that._sortedColumn = that._settings.initialSortColumn;
+                }
+
+                if (refresh) {
+                    that._refreshData(updateUrl);
+                    $(".sort-ascending").css('opacity', '0.5');
+                    $(".sort-descending").css('opacity', '0.5');
+                    if (that._sortedColumn !== null) {
+                        var sortIndex = that._settings.columnKeys.indexOf(that._sortedColumn);
+                        var thSet = that._table.find('th');
+                        var th = $(thSet[sortIndex]);
+
+                        th.find(that._sortOrder === "asc" ? ".sort-ascending" : ".sort-descending").css('opacity', '1.0');
+                    }
+                }
+            }
         },
 
         _buildButtonBar: function() {
@@ -336,6 +415,10 @@
                 this._pageData = sourceData.currentPage;
                 this._numberOfRows = sourceData.totalRows;
             }
+            else if (sourceData === null || sourceData === undefined) {
+                this._pageData = [];
+                this._numberOfRows= 0;
+            }
             this._deferredCellTemplateCompilation();
         },
 
@@ -368,12 +451,16 @@
             }
         },
 
-        _refreshData: function(newBinding) {
+        _refreshData: function(updateUrl, newBinding) {
             var sortedData;
             var aVal;
             var bVal;
             var dataToSort;
             var that = this;
+
+            if (updateUrl === undefined) {
+                updateUrl = true;
+            }
 
             if (newBinding !== undefined) {
                 if ($.isArray(newBinding)) {
@@ -387,8 +474,8 @@
 
             that._currentPage = Math.floor(that._currentPage);
 
-            if (that._settings.ajaxDataFunction !== null) {
-                that._settings.ajaxDataFunction(
+            if (that._settings.dataFunction !== null) {
+                that._settings.dataFunction(
                     that._currentPage,
                     that._settings.pageSize,
                     that._sortedColumn,
@@ -399,6 +486,9 @@
                         that._loadData();
                         that._buildButtonBar();
                         that._hideLoading();
+                        if (updateUrl) {
+                            that._updateUrl();
+                        }
                         if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                 });
             }
@@ -429,6 +519,9 @@
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
+                            if (updateUrl) {
+                                that._updateUrl();
+                            }
                             if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                         },
                         error: function(jqXhr, textStatus, errorThrown) {
@@ -454,6 +547,9 @@
                             that._loadData();
                             that._buildButtonBar();
                             that._hideLoading();
+                            if (updateUrl) {
+                                that._updateUrl();
+                            }
                             if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
                         },
                         error: function(jqXhr, textStatus, errorThrown) {
@@ -463,14 +559,7 @@
                         }
                     });
                 }
-            }
-            else if (that._settings.dataFunction !== null) {
-                that._fetchedData = true;
-                that._parseSourceData(that._settings.dataFunction(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder));
-                that._loadData();
-                that._buildButtonBar();
-                if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
-            }
+            } 
             else {
                 dataToSort = null;
                 if ($.isArray(that._settings.data)) {
@@ -504,6 +593,9 @@
                 that._deferredCellTemplateCompilation();
                 that._loadData();
                 that._buildButtonBar();
+                if (updateUrl) {
+                    that._updateUrl();
+                }
 
                 if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
             } 
@@ -511,7 +603,7 @@
 
         _loadData: function() {
             var that = this;
-            if (that._pageData !== undefined && that._pageData.length === 0 && that._settings.templates.emptyTemplate !== null) {
+            if (that._pageData !== undefined && that._pageData.length === 0 && that._currentPage == 0 && that._settings.templates.emptyTemplate !== null) {
                 that.$element.empty();
                 that._buttonBar = undefined;
                 that._table = undefined;
@@ -620,7 +712,7 @@
         // $("#grid").simplePagingGrid("refresh", "http://my.data.url/action")
 
         refresh: function(optionalUrl) {
-            this._refreshData(optionalUrl);
+            this._refreshData(false, optionalUrl);
         },
 
         currentPageData: function(callback) {
@@ -631,11 +723,11 @@
     $.fn[pluginName] = function (options) {
         var functionArguments = arguments;
         var templates = $.extend({
-            buttonBarTemplate: '<div class="clearfix"> \
+            buttonBarTemplate: '<div class="clearfix form-inline"> \
                                     {{#if showGotoPage}} \
-                                        <div class="pull-right col-lg-1"> \
-                                            <div class="input-group"> \
-                                                <input style="width: 3em;" class="form-control pagetextpicker" type="text" value="{{currentPage}}" /> \
+                                        <div class="pull-right form-group" style="padding-left: 1em;"> \
+                                            <div class="input-group" style="width: 110px;"> \
+                                                <input class="form-control pagetextpicker" type="text" value="{{currentPage}}" /> \
                                                 <span class="input-group-btn"> \
                                                     <button class="btn btn-default pagetextpickerbtn" type="button">Go</button> \
                                                 </span> \
@@ -701,7 +793,6 @@
             sortOrder: "asc",
             initialSortColumn: null,
             tableClass: "table",
-            ajaxDataFunction: null,
             dataFunction: null,
             dataUrl: null,
             data: null,
@@ -717,6 +808,9 @@
             pageNumber: 0,
             bootstrapVersion: 3,
             pagingEnabled: true,
+            urlWriter: defaultUrlWriter,
+            urlReader: defaultUrlReader,
+            urlUpdatingEnabled: true,
             
             // Event Handlers
             emptyTemplateCreated: null,
@@ -812,7 +906,8 @@
 
         return this.each(function () {
             var data = $.data(this, "plugin_" + pluginName);
-            if (!data) {
+            var isMethodCall = functionArguments.length > 0 && (typeof functionArguments[0] == 'string' || functionArguments[0] instanceof String);
+            if (!data || !isMethodCall) {
                 $.data(this, "plugin_" + pluginName, new SimplePagingGrid( this, settings ));
             }
             else {
