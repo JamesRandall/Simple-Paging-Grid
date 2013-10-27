@@ -11,7 +11,7 @@
     <iconUrl>http://www.accidentalfish.com/simplePagingGridIcon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Bootstrap based JavaScript grid built as a jQuery plugin and making use of the Handlebars templating library. Super simple to use and very customizable.</description>
-    <releaseNotes>Support for Bootstrap 3, fixes for issues reported via GitHub.</releaseNotes>
+    <releaseNotes>Now works with Bootstrap 3 by default (to use Bootstrap 2 set the bootstrapVersion property to 2), removed the need for the grids own CSS file, addressed GitHub logged issues, updated dataFunction to support a callback approach, resolved issue with emptyTemplate and null results, added support for URL updating to enable back and forward button behaviour.</releaseNotes>
     <copyright>Copyright 2013 Accidental Fish Ltd.</copyright>
     <tags>grid datagrid jquery plugins widgets javascript handlebars bootstrap simple json mvc asp.net</tags>
     <dependencies>
