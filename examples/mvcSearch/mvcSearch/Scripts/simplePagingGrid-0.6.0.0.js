@@ -101,11 +101,10 @@
                         function setSortHeadings() {
                             that._sortedColumn = columnKey;
                             if (that._sortElement != null) {
-                                that._sortElement.removeClass("sort-ascending-active");
-                                that._sortElement.removeClass("sort-descending-active");
+                                that._sortElement.css('opacity', '0.5');
                             }
                             that._sortElement = that._sortOrder === "asc" ? sortAscending : sortDescending;
-                            that._sortElement.addClass(that._sortOrder === "asc" ? "sort-ascending-active" : "sort-descending-active");
+                            that._sortElement.css('opacity', '1.0');
                         }
 
                         function sort(event) {
@@ -153,7 +152,7 @@
             if (this._numberOfRows !== null) {
                 return Math.ceil(this._numberOfRows / this._settings.pageSize);
             }
-            return Number.MAX_VALUE;
+            return 0;
         },
 
         _getPageRange: function() {
@@ -300,6 +299,10 @@
             if (hadFocus) {
                 that._pageTextPicker.focus();
             }
+
+            if (!that._settings.pagingEnabled) {
+                that._buttonBar.hide();
+            }
         },
 
         _sizeLoadingOverlay: function() {
@@ -384,7 +387,22 @@
 
             that._currentPage = Math.floor(that._currentPage);
 
-            if (that._settings.dataUrl !== null) {
+            if (that._settings.ajaxDataFunction !== null) {
+                that._settings.ajaxDataFunction(
+                    that._currentPage,
+                    that._settings.pageSize,
+                    that._sortedColumn,
+                    that._sortOrder,
+                    function(jsonData) {
+                        that._fetchedData = true;
+                        that._parseSourceData(jsonData);
+                        that._loadData();
+                        that._buildButtonBar();
+                        that._hideLoading();
+                        if (that._settings.pageRenderedEvent !== null) that._settings.pageRenderedEvent(that._pageData);
+                });
+            }
+            else if (that._settings.dataUrl !== null) {
                 if (that._pageData === undefined) {
                     that._loadData();
                     that._pageData = [];
@@ -549,7 +567,7 @@
                         }
                         $.each(that._settings.columnKeys, function(index, propertyName) {
                             var td;
-                            if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates !== null) {
+                            if (that._settings.cellContainerTemplates !== null && index < that._settings.cellContainerTemplates.length && that._settings.cellContainerTemplates[index] !== null) {
                                 td = $(that._settings.cellContainerTemplates[index](index));
                             } else {
                                 td = $('<td>');
@@ -559,7 +577,7 @@
                                 td.html(that._compiledCellTemplates[index][rowIndex](that._sourceData));
                             } else {
                                 var value = rowData[propertyName];
-                                td.html(value);
+                                td.text(value);
                             }
                             tr.append(td);
                         });
@@ -615,55 +633,55 @@
         var templates = $.extend({
             buttonBarTemplate: '<div class="clearfix"> \
                                     {{#if showGotoPage}} \
-                                        <div class="pull-right"  style="padding-left: 1em;"> \
-                                            <div class="input-append" > \
-                                                    <input style="width: 3em;" class="pagetextpicker" type="text" value="{{currentPage}}" /> \
-                                                    <button class="btn pagetextpickerbtn" type="button">Go</button> \
+                                        <div class="pull-right col-lg-1"> \
+                                            <div class="input-group"> \
+                                                <input style="width: 3em;" class="form-control pagetextpicker" type="text" value="{{currentPage}}" /> \
+                                                <span class="input-group-btn"> \
+                                                    <button class="btn btn-default pagetextpickerbtn" type="button">Go</button> \
+                                                </span> \
                                             </div> \
                                         </div> \
                                     {{/if}} \
-                                    <div class="pagination pull-right" style="margin-top: 0px"> \
-                                        <ul> \
-                                            {{#if isFirstPage}} \
-                                                {{#if pageNumbersEnabled}} \
-                                                    <li><a href="#" class="first"><i class="icon-fast-backward" style="opacity: 0.5"></i></a></li> \
-                                                {{/if}} \
-                                                <li><a href="#" class="previous"><i class="icon-step-backward" style="opacity: 0.5"></i></a></li> \
-                                            {{/if}} \
-                                            {{#unless isFirstPage}} \
-                                                {{#if pageNumbersEnabled}} \
-                                                    <li><a href="#" class="first"><i class="icon-fast-backward"></i></a></li> \
-                                                {{/if}} \
-                                                <li><a href="#" class="previous"><i class="icon-step-backward"></i></a></li> \
-                                            {{/unless}} \
+                                    <ul class="pagination pull-right" style="margin-top: 0px"> \
+                                        {{#if isFirstPage}} \
                                             {{#if pageNumbersEnabled}} \
-                                                {{#each pages}} \
-                                                    {{#if isCurrentPage}} \
-                                                        <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
-                                                    {{/if}} \
-                                                    {{#unless isCurrentPage}} \
-                                                        <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
-                                                    {{/unless}} \
-                                                {{/each}} \
+                                                <li><a href="#" class="first"><span class="glyphicon glyphicon-fast-backward" style="opacity: 0.5"></span></a></li> \
                                             {{/if}} \
-                                            {{#if isLastPage}} \
-                                                <li><a href="#" class="next"><i class="icon-step-forward" style="opacity: 0.5"></i></a></li> \
-                                                {{#if pageNumbersEnabled}} \
-                                                    <li><a href="#" class="last"><i class="icon-fast-forward" style="opacity: 0.5"></i></a></li> \
-                                                {{/if}} \
+                                            <li><a href="#" class="previous"><span class="glyphicon glyphicon-step-backward" style="opacity: 0.5"></span></a></li> \
+                                        {{/if}} \
+                                        {{#unless isFirstPage}} \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="first"><span class="glyphicon glyphicon-fast-backward"></span></a></li> \
                                             {{/if}} \
-                                            {{#unless isLastPage}} \
-                                                <li><a href="#" class="next"><i class="icon-step-forward"></i></a></li> \
-                                                {{#if pageNumbersEnabled}} \
-                                                    <li><a href="#" class="last"><i class="icon-fast-forward"></i></a></li> \
+                                            <li><a href="#" class="previous"><span class="glyphicon glyphicon-step-backward"></span></a></li> \
+                                        {{/unless}} \
+                                        {{#if pageNumbersEnabled}} \
+                                            {{#each pages}} \
+                                                {{#if isCurrentPage}} \
+                                                    <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
                                                 {{/if}} \
-                                            {{/unless}} \
-                                        </ul> \
-                                    </div> \
+                                                {{#unless isCurrentPage}} \
+                                                    <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                                {{/unless}} \
+                                            {{/each}} \
+                                        {{/if}} \
+                                        {{#if isLastPage}} \
+                                            <li><a href="#" class="next"><span class="glyphicon glyphicon-step-forward" style="opacity: 0.5"></span></a></li> \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="last"><span class="glyphicon glyphicon-fast-forward" style="opacity: 0.5"></span></a></li> \
+                                            {{/if}} \
+                                        {{/if}} \
+                                        {{#unless isLastPage}} \
+                                            <li><a href="#" class="next"><span class="glyphicon glyphicon-step-forward"></span></a></li> \
+                                            {{#if pageNumbersEnabled}} \
+                                                <li><a href="#" class="last"><span class="glyphicon glyphicon-fast-forward"></span></a></li> \
+                                            {{/if}} \
+                                        {{/unless}} \
+                                    </ul> \
                                 </div>',
             tableTemplate: '<table><thead></thead><tbody></tbody></table>',
             headerTemplate: '<th width="{{width}}">{{title}}</th>',
-            sortableHeaderTemplate: '<th width="{{width}}"><div class="sort-container"><ul class="sort"><li class="sort-ascending"/><li class="sort-descending"/></ul>{{title}}</div></th>',
+            sortableHeaderTemplate: '<th width="{{width}}">{{title}}<div class="sort-container pull-right"><span class="glyphicon glyphicon-arrow-up sort-ascending" style="opacity: 0.5"></span><span class="glyphicon glyphicon-arrow-down sort-descending" style="opacity: 0.5"></span></div></th>',
             emptyCellTemplate: '<td>&nbsp;</td>',
             loadingOverlayTemplate: '<div class="loading"></div>',
             currentPageTemplate: '<span class="page-number">{{pageNumber}}</span>',
@@ -683,6 +701,7 @@
             sortOrder: "asc",
             initialSortColumn: null,
             tableClass: "table",
+            ajaxDataFunction: null,
             dataFunction: null,
             dataUrl: null,
             data: null,
@@ -696,11 +715,66 @@
             ajaxError: null,
             showHeader: true,
             pageNumber: 0,
+            bootstrapVersion: 3,
+            pagingEnabled: true,
             
             // Event Handlers
             emptyTemplateCreated: null,
             gridCreated: null
         }, options);
+
+        if (settings.bootstrapVersion === 2) {
+            templates.buttonBarTemplate = ' \
+                <div class="clearfix"> \
+                    {{#if showGotoPage}} \
+                        <div class="pull-right"  style="padding-left: 1em;"> \
+                            <div class="input-append" > \
+                                    <input style="width: 3em;" class="pagetextpicker" type="text" value="{{currentPage}}" /> \
+                                    <button class="btn pagetextpickerbtn" type="button">Go</button> \
+                            </div> \
+                        </div> \
+                    {{/if}} \
+                    <div class="pagination pull-right" style="margin-top: 0px"> \
+                        <ul> \
+                            {{#if isFirstPage}} \
+                                {{#if pageNumbersEnabled}} \
+                                    <li><a href="#" class="first"><i class="icon-fast-backward" style="opacity: 0.5"></i></a></li> \
+                                {{/if}} \
+                                <li><a href="#" class="previous"><i class="icon-step-backward" style="opacity: 0.5"></i></a></li> \
+                            {{/if}} \
+                            {{#unless isFirstPage}} \
+                                {{#if pageNumbersEnabled}} \
+                                    <li><a href="#" class="first"><i class="icon-fast-backward"></i></a></li> \
+                                {{/if}} \
+                                <li><a href="#" class="previous"><i class="icon-step-backward"></i></a></li> \
+                            {{/unless}} \
+                            {{#if pageNumbersEnabled}} \
+                                {{#each pages}} \
+                                    {{#if isCurrentPage}} \
+                                        <li class="active"><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                    {{/if}} \
+                                    {{#unless isCurrentPage}} \
+                                        <li><a href="#" class="pagenumber" data-pagenumber="{{pageNumber}}">{{displayPageNumber}}</a></li> \
+                                    {{/unless}} \
+                                {{/each}} \
+                            {{/if}} \
+                            {{#if isLastPage}} \
+                                <li><a href="#" class="next"><i class="icon-step-forward" style="opacity: 0.5"></i></a></li> \
+                                {{#if pageNumbersEnabled}} \
+                                    <li><a href="#" class="last"><i class="icon-fast-forward" style="opacity: 0.5"></i></a></li> \
+                                {{/if}} \
+                            {{/if}} \
+                            {{#unless isLastPage}} \
+                                <li><a href="#" class="next"><i class="icon-step-forward"></i></a></li> \
+                                {{#if pageNumbersEnabled}} \
+                                    <li><a href="#" class="last"><i class="icon-fast-forward"></i></a></li> \
+                                {{/if}} \
+                            {{/unless}} \
+                        </ul> \
+                    </div> \
+                </div>';
+                templates.sortableHeaderTemplate = '<th width="{{width}}">{{title}}<div class="sort-container pull-right"><ul class="sort"><i class="sort-ascending icon-arrow-up" style="opacity: 0.5" /><li class="sort-descending icon-arrow-down" style="opacity: 0.5" /></ul></div></th>';
+        }
 
         settings.templates = {};
         $.each(templates, function (index, value) {
