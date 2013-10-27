@@ -9,19 +9,9 @@
 
     <!-- Le styles -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-	<link href="../../css/simplePagingGrid-0.4.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
     <script type="text/javascript" src="script/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="script/handlebars-1.0.rc.1.js"></script>
-    <script type="text/javascript" src="../../script/simplePagingGrid-0.5.0.2.js"></script>
+    <script type="text/javascript" src="../../script/simplePagingGrid-0.6.0.0.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 		        $("#exampleGrid").simplePagingGrid({
@@ -58,24 +48,20 @@
 	</script>
 </head>
 <body>
-    <div class="page">
-        <header>
-            <div class="navbar navbar-fixed-top">
-              <div class="navbar-inner">
-                <div class="container-fluid">
-                  <a class="brand" href="#">Simple Paging Grid - Sorting Example</a>
-                </div>
-              </div>
-            </div>
-        </header>
-        <section id="main">
-			<div class="container-fluid">
-				<div class="row-fluid">
-					<p>The grid below demonstrates sorting.</p>
-					<div id="exampleGrid"></div>
-				</div>
+    <header>
+      <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Simple Paging Grid - Sorting Example</a>
+        </div>
+      </div>
+    </header>
+    <section id="main">
+		<div class="container">
+			<div class="row">
+				<p>The grid below demonstrates sorting.</p>
+				<div id="exampleGrid"></div>
 			</div>
-        </section>
-    </div>
+		</div>
+    </section>
 </body>
 </html>

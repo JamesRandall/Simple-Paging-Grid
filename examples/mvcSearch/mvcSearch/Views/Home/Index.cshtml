@@ -2,8 +2,8 @@
     ViewBag.Title = "MVC Example";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container-fluid">
-	<div class="row-fluid">
+<div class="container">
+	<div class="row">
 		<p>Below is an example of a grid extended with a search bar and that refreshes when the search button is clicked and brings data from the server.</p>
 		<div id="exampleGrid"></div>
 	</div>
@@ -42,7 +42,7 @@
                 tableClass: "table table-striped table-bordered",
                 templates: {
                     emptyTemplate: '<table class="table table-striped table-bordered"><thead><tr class="searchbar" style="vertical-align:middle;"><th colspan="3" style="vertical-align: middle;"><div class="input-append"><input placeholder="Search" type="text" class="searchText"><button class="btn searchBtn" type="button">Search</button></div></th></tr></thead><tbody><tr><td colspan="3">No results</td></tr></tbody></table>',
-                    tableTemplate: '<table><thead><tr class="searchbar" style="vertical-align:middle;"><th colspan="3" style="vertical-align: middle;"><div class="input-append"><input placeholder="Search" type="text" class="searchText"><button class="btn searchBtn" type="button">Search</button></div></th></tr></thead><tbody></tbody></table>'
+                    tableTemplate: '<table><thead><tr class="searchbar" style="vertical-align:middle;"><th colspan="3" style="vertical-align: middle;"><div class="input-group"><input placeholder="Search" type="text" class="searchText form-control"><span class="input-group-btn"><button class="btn btn-default searchBtn" type="button">Search</button></span></div></th></tr></thead><tbody></tbody></table>'
                 },
                 emptyTemplateCreated: function() {
                     bindEventHandlers();

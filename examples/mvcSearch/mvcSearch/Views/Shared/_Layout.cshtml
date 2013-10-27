@@ -5,26 +5,15 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
 </head>
     <body>
         <div>
             <header>
-                <div class="navbar navbar-fixed-top">
-                    <div class="navbar-inner">
-                        <div class="container-fluid">
-                            <a class="brand" href="#">Simple Paging Grid - @ViewBag.Title</a>
-                        </div>
-                    </div>
+              <div class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Simple Paging Grid - Search Example</a>
                 </div>
+              </div>
             </header>
             <section id="main">
                 @RenderBody()

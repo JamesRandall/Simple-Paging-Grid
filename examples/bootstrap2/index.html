@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Simple Paging Grid - Sorting Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <script type="text/javascript" src="script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="script/handlebars-1.0.rc.1.js"></script>
+    <script type="text/javascript" src="../../script/simplePagingGrid-0.6.0.0.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+		        $("#exampleGrid").simplePagingGrid({
+		            columnNames: ["Name", "Price ($)", "Quantity"],
+		            columnKeys: ["Name", "Price", "Quantity"],
+		            columnWidths: ["50%", "25%", "25%"],
+		            sortable: [true, true, true],
+		            initialSortColumn: "Name",
+		            bootstrapVersion: 2,
+		            data: [
+		                { "OrderLineID": 1, "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+						{ "OrderLineID": 2, "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+						{ "OrderLineID": 3, "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+						{ "OrderLineID": 4, "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+						{ "OrderLineID": 5, "Name": "Raspberries", "Price": 1.50, "Quantity": 20 },
+						{ "OrderLineID": 6, "Name": "Blueberries", "Price": 1.50, "Quantity": 20 },
+						{ "OrderLineID": 7, "Name": "Pairs", "Price": 1.50, "Quantity": 8 },
+						{ "OrderLineID": 8, "Name": "Melons", "Price": 1.50, "Quantity": 2 },
+						{ "OrderLineID": 9, "Name": "Potatoes", "Price": 1.50, "Quantity": 6 },
+						{ "OrderLineID": 10, "Name": "Sweet Potatoes", "Price": 1.50, "Quantity": 3 },
+						{ "OrderLineID": 11, "Name": "Cabbages", "Price": 1.50, "Quantity": 1 },
+						{ "OrderLineID": 12, "Name": "Lettuce", "Price": 1.50, "Quantity": 1 },
+						{ "OrderLineID": 13, "Name": "Onions", "Price": 1.50, "Quantity": 25 },
+						{ "OrderLineID": 14, "Name": "Carrots", "Price": 1.50, "Quantity": 30 },
+						{ "OrderLineID": 15, "Name": "Broccoli", "Price": 1.50, "Quantity": 1 },
+						{ "OrderLineID": 16, "Name": "Cauliflower", "Price": 1.50, "Quantity": 1 },
+						{ "OrderLineID": 17, "Name": "Peas", "Price": 1.50, "Quantity": 1 },
+						{ "OrderLineID": 18, "Name": "Sweetcorn", "Price": 1.50, "Quantity": 2 },
+						{ "OrderLineID": 19, "Name": "Gooseberries", "Price": 1.50, "Quantity": 20 },
+						{ "OrderLineID": 20, "Name": "Spring Onions", "Price": 1.50, "Quantity": 9 },
+		                { "OrderLineID": 21, "Name": "Beetroot", "Price": 0.30, "Quantity": 3 },
+                		{ "OrderLineID": 22, "Name": "Avocado", "Price": 2.30, "Quantity": 1 }]
+		        });
+		    });
+	</script>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <div class="navbar navbar-fixed-top">
+              <div class="navbar-inner">
+                <div class="container-fluid">
+                  <a class="brand" href="#">Simple Paging Grid - Using Bootstrap 2</a>
+                </div>
+              </div>
+            </div>
+        </header>
+        <section id="main">
+                        <div class="container-fluid">
+                                <div class="row-fluid">
+                                        <p>The grid below is styled using Bootstrap 2 by setting the bootstrapVersion property to 2.</p>
+                                        <div id="exampleGrid"></div>
+                                </div>
+                        </div>
+        </section>
+    </div>
+</body>
+</html>

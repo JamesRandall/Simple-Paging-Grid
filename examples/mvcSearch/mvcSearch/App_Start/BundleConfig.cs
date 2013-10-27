@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace mvcSearch
 {
@@ -11,9 +10,9 @@ namespace mvcSearch
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/handlebars-1.0.rc.1.js",
-                        "~/Scripts/simplePagingGrid-0.5.0.2.js"));
+                        "~/Scripts/simplePagingGrid-0.6.0.0.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/bootstrap.css"));
+            bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/bootstrap/bootstrap.css"));
         }
     }
 }

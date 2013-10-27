@@ -9,23 +9,13 @@
 
     <!-- Le styles -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-	<link href="../../css/simplePagingGrid-0.4.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
     <script type="text/javascript" src="script/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="script/handlebars-1.0.rc.1.js"></script>
-    <script type="text/javascript" src="../../script/simplePagingGrid-0.5.0.2.js"></script>
+    <script type="text/javascript" src="../../script/simplePagingGrid-0.6.0.0.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 		        var callIndex = 0;
-		        function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder) {
+		        function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder, callback) {
 		            callIndex++;
 		            var functionData = [
 		                { "OrderLineID": 1, "Name": "Pineapple", "Price": 1.50, "Quantity": 4, "CallIndex":callIndex },
@@ -42,13 +32,9 @@
 						{ "OrderLineID": 12, "Name": "Strawberry", "Price": 1.10, "Quantity": 40, "CallIndex":callIndex },
 						{ "OrderLineID": 13, "Name": "Oranges", "Price": 0.20, "Quantity": 8, "CallIndex":callIndex },
 						{ "OrderLineID": 14, "Name": "Apples", "Price": 1.50, "Quantity": 5, "CallIndex":callIndex },
-						{ "OrderLineID": 15, "Name": "Raspberries", "Price": 1.50, "Quantity": 20, "CallIndex":callIndex }
+						{ "OrderLineID": 15, "Name": "Raspberries", "Price": 1.50, "Quantity": 20, "CallIndex":callIndex },
 					];
-					return functionData.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize);
-					/*return {
-						currentPage: functionData.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize),
-						totalRows: functionData.length
-					};*/
+					callback(functionData.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize));
 		        };
 		    
 		        $("#exampleGrid").simplePagingGrid({
@@ -56,36 +42,35 @@
 		            columnKeys: ["Name", "Price", "Quantity", "CallIndex"],
 		            columnWidths: ["50%", "20%", "20%", "10%"],
 		            dataFunction: getDataFunction,
-		            minimumVisibleRows: 10
+		            minimumVisibleRows: 10,
+		            templates: {
+		            	emptyTemplate: '<p>Empty</p>'
+		            }
 		        });
 		    });
 	</script>
 </head>
 <body>
-    <div class="page">
-        <header>
-            <div class="navbar navbar-fixed-top">
-              <div class="navbar-inner">
-                <div class="container-fluid">
-                  <a class="brand" href="#">Simple Paging Grid - Function Binding Example</a>
-                </div>
-              </div>
-            </div>
-        </header>
-        <section id="main">
-			<div class="container-fluid">
-				<div class="row-fluid">
-					<p>Below is a very simple example of a paging grid with the data supplied by a function. 
-					    The data is recreated on each call of the function and the number of times the function has
-					    been called is shown in the final column.</p>
-					<p>Page forwards and backwards to see it increase.</p>
-					<p>Note that in function binding you are expected to handle the paging and sorting within the function - it works like URL
-					    binding.</p>
-					<p>View the source to see how it works.</p>
-					<div id="exampleGrid"></div>
-				</div>
+    <header>
+	    <div class="navbar navbar-default" role="navigation">
+	      <div class="navbar-header">
+	          <a class="navbar-brand" href="#">Simple Paging Grid - Function Binding Example</a>
+	      </div>
+	    </div>
+    </header>
+    <section id="main">
+		<div class="container">
+			<div class="row">
+				<p>Below is a very simple example of a paging grid with the data supplied by a function. 
+				    The data is recreated on each call of the function and the number of times the function has
+				    been called is shown in the final column.</p>
+				<p>Page forwards and backwards to see it increase.</p>
+				<p>Note that in function binding you are expected to handle the paging and sorting within the function - it works like URL
+				    binding.</p>
+				<p>View the source to see how it works.</p>
+				<div id="exampleGrid"></div>
 			</div>
-        </section>
-    </div>
+		</div>
+    </section>
 </body>
 </html>

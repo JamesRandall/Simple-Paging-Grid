@@ -1,6 +1,10 @@
 # README
 
-Simple Paging Grid is a lightweight CSS friendly readonly grid that supports both preloaded and dynamically loaded data and is readily compatible with the Twitter Bootstrap <http://twitter.github.com/bootstrap/> library:
+Simple Paging Grid is a lightweight CSS friendly readonly grid that supports both preloaded and dynamically loaded data and is designed to work with the Bootstrap <http://getbootstrap.com/> library. With the adoption of Bootstrap as the default template for ASP.Net and MVC applications in Visual Studio 2013 Simple Paging Grid now supports rapid prototyping within that environment straight out the box - just add the NuGet package and go.
+
+This latest version of the grid incorporates much of the feedback that has been given to me on GitHub and for which I am really grateful. Time pressures meant it took me a while to get this out but I'm still committed to supporting Simple Paging Grid - I use it myself extensively.
+
+*Please note that Simple Paging Grid by default uses Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2 (an example is provided in the examples folder). Also the grid now has back and forward browser button (history) support enabled by default - set urlUpdatingEnabled to false to disable this.*
 
 ![Screenshot]
 (http://www.accidentalfish.com/simple-paging-grid-screenshot.png)
@@ -11,14 +15,11 @@ It's built as a jQuery plugin and has been developed and tested against version 
 
 <https://github.com/wycats/handlebars.js/blob/master/LICENSE>
 
-
-This is an early set of code spun out of a not for profit website that is under construction, bug reports and feature requests are welcome.
-
 I generally make changes in a development branches before moving to master so if you want to take advantage of the latest fixes and features before general release you can grab the code from their. I do keep the documentation current in that branch I just generally haven't tested it to a point where I'm ready to push into master and release via NuGet. The branch is at <https://github.com/JamesRandall/Simple-Paging-Grid/tree/development>
 
 The Simple Paging Grid is covered by the MIT license (see the bottom of this readme and also the LICENSE file) so you can largely use it as you like in both commercial and non-commercial projects. Though if you do use it please consider dropping me an email with feedback: it's always nice to know when and where your code is in use.
 
-Finally - thanks to the authors of jQuery, Handlebars and Twitter Bootstrap all of which are invaluable libraries.
+Finally - thanks to the authors of jQuery, Handlebars and Bootstrap all of which are invaluable libraries.
 
 ## Demos
 
@@ -94,6 +95,7 @@ Like many jQuery plugins the Simple Paging Grid is configured using an options d
 **Option**      |**Description**
 ----------------|-----------------------------------------
 ajaxError       |*(Optional)* Called in the event of errors contacting the server. Same format as the jQuery ajax error handler.
+bootstrapVersion|*(Optional)* Set to 2 to use Bootstrap 2 or 3 for version 3. Defaults to 3.
 cellTemplates   |*(Optional)* By default Simple Paging Grid just places the value of your data into each cell however if you want to get more funky than that, for example to include hyperlinks, then you can render the contents using Handlebars (see below).
 cellContainerTemplates |*(Optional)* Allows the containers for each cell to be rendered with a custom style. By default cell containers are plain td tags.
 columnDefinitionTemplates|*(Optional)* Allows column tags to be defined before the thead block.
@@ -101,7 +103,7 @@ columnKeys      |An array of property names within the data block, one for each 
 columnNames     |An array of titles for the column headers
 columnWidths    |*(Optional)* The width of each column either absolute or percentages
 data            |If you're using a client side data model then the data in the form of an array of objects should be supplied via this property.
-dataFunction    |Data can be sourced from a function
+dataFunction    |Data can be sourced from a function - this can be client data or a custom ajax call.
 dataUrl         |If you want to fetch pages of data dynamically from a web server then the URL for the data source should be supplied via this property. See below.
 headerTemplates |*(Optional)* By default Simple Paging Grid just places column name into each header cell however if you want to get more funky than that, for example to include a button, then you can render the contents using Handlebars (see below).
 initialSortColumn|*(Optional)* The name of the column the grid is initially sorted by. If unspecified then the data has its natural sort order.
@@ -110,6 +112,7 @@ numberOfPageLinks|*(Optional)* If showing page numbers this is the maximum numbe
 pageNumber      |*(Optional)* Initial page number, defaults to 0.
 pageRenderedEvent|*(Optional)* A function that is called and supplied with the page data straight after the page has been rendered.
 pageSize        |*(Optional)* The size of each page, defaults to 10.
+pagingEnabled   |*(Optional)* Is paging enabled, if disbaled the button bar is hidden. Defaults to true.
 postDataFunction|*(Optional)* If supplied then the HTTP POST verb will be used for communicating with the server via the URL set in dataUrl. This function should return an object containing the data you want to be in the payload (there is no need to include the page number etc. as this will be supplied by the grid).
 rowTemplates|*(Optional)* If supplied allows rows to be styled. By default the grid simply emits tr tags. Row templates are cycled through - a typical use would be to supply two row templates for alternate row background shading.
 showLoadingOverlay|*(Optional)* If set to true then when data is being retrieved from a URL a loading overlay is shown. Defaults to true.
@@ -118,8 +121,11 @@ showHeader      |*(Optional)* True to show the column headers, false to hide. De
 showPageNumbers |*(Optional)* If this is set to true and the grid is populated with an object that supplies the total number of rows (see below) then quick links to specific page numbers are shown in the button bar.
 sortable        |*(Optional)* An array of boolean values indicating if the grid can be sorted by the column. If unspecified then the grid is not sortable.
 sortorder       |*(Optional)* The starting sort order. Should be asc or desc.
-tableClass      |*(Optional*) The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
-templates       |*(Optional*)The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
+tableClass      |*(Optional)* The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
+templates       |*(Optional)*The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
+urlReader       |*(Optional)*An optional function that reads the grids page and sort settings from the URL. The default implementation reads from the anchor.
+urlUpdatingEnabled|*(Optional)*When set to true the grid updates the URl as the page number and sort order is changed, this enables back and forward buttons to behave as expected in the browser. Defaults to true.
+urlWriter       |*(Optional)*An optional function that writes the grids page and sort settings to the URL. The default implementation writes to the anchor. This, and urlReader, should be set to custom functions if for example you want to write into url query parameters.
 
 ## Methods
 
@@ -173,7 +179,8 @@ Example:
 Data can be loaded into the grid in three different ways:
 
 * Directly to an object constructed in the client
-* To a JSON object retrieved via a remote service
+* To a JSON object retrieved via a remote service using a URL
+* To a JSON object retrieved via a remote service using a custom function
 * To an object returned from a function
 
 Details, and examples, of how to use these options are shown below.
@@ -255,9 +262,28 @@ In response to this your server should return the JSON data for the page, for ex
 
 Note that if building SQL dynamically you should take care to protect from injection attacks and your server should enforce a maximum page size to prevent dangerously large pages of data being requested by an attacker.
 
-## Loading Data From A Function
+## Loading Data From A Remote Server Using A Custom Function
 
-To load data from a function then a function should be supplied to the datagrid as shown below:
+If you have an existing server interface that doesn't the data format or interface as described in the above section you can supply a function to the grid component and handle the remote data call yourself. You do this using the dataFunction property as follows:
+
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            columnNames: ["Name", "Price ($)", "Quantity"],
+            columnKeys: ["Name", "Price", "Quantity"],
+            sortable: [true, true, true],
+            initialSortColumn: "Name",
+            dataFunction: function(pageNumber, pageSize, sortColumn, sortOrder, callback) {
+                $.post(myUrl, {searchQuery: query, limit: pageSize, start: pageNumber}.done(function(response)) {
+                    callback(response.data);
+                });
+            }
+        });
+    });
+
+
+## Loading Client Data From A Function
+
+To load client data from a function then a function should be supplied to the datagrid as shown below:
 
     $(document).ready(function() {
         $("#exampleGrid").simplePagingGrid({
@@ -271,14 +297,14 @@ To load data from a function then a function should be supplied to the datagrid 
 
 The function will be passed the page number, page size, sort column and sort order in the same manner as URL data loading and should return an object structured in the same way:
 
-    function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder) {
-        return [
-		    { "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
-			{ "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
-			{ "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
-			{ "Name": "Apples", "Price": 1.50, "Quantity": 5 },
-			{ "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }];
-	};
+    function getDataFunction(pageNumber, pageSize, sortColumn, sortOrder,callback) {
+        callback([
+            { "Name": "Pineapple", "Price": 1.50, "Quantity": 4 },
+            { "Name": "Strawberry", "Price": 1.10, "Quantity": 40 },
+            { "Name": "Oranges", "Price": 0.20, "Quantity": 8 },
+            { "Name": "Apples", "Price": 1.50, "Quantity": 5 },
+            { "Name": "Raspberries", "Price": 1.50, "Quantity": 20 }];
+    });
 
 ## Cell Templates
 
@@ -384,6 +410,14 @@ The example below shows changing the buttons to Twitter Bootstrap primary style 
 
 The default templates can be located near the top of the un-minified source code.
 
+## Browser Back and Forward Button Support (History)
+
+As of version 0.6.0.0 the grid integrates with a browesers history on supported browers (it requires history API support).
+
+This is enabled as a default (to turn it off set urlUpdatingEnabled to false) and the standard behavior is to write the settings into the anchor. You can change this behaviour by supplying new URL write and read functions (urlReader and urlWriter).
+
+If you want to support older browsers (and accept certain limitations) then you can supply functions that modify the window.location.hash property.
+
 ## Examples
 
 The examples folder in the repository and download package contains a number of example usages including:
@@ -398,7 +432,8 @@ The examples folder in the repository and download package contains a number of 
 
 Date       |Version |Changes
 -----------|--------|--------
-30/03/2012 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.
+27/10/2013 |0.6.0.0 |Now works with Bootstrap 3 by default (to use Bootstrap 2 set the bootstrapVersion property to 2), removed the need for the grids own CSS file, addressed GitHub logged issues, updated dataFunction to support a callback approach, resolved issue with emptyTemplate and null results, added support for URL updating to enable back and forward button behaviour.
+30/03/2013 |0.5.0.2 |Unit tests, added simplest possible syntax: just supply data, bug fixes made as a result of unit testing, added the pageNumber option, improved support for refresh when bound to a data array, page numbers supported on data arrays.
 28/03/2013 |0.50    |Added an empty grid template, fixed a bug where the next and last buttons show when the grid is empty, added clearfix to buttonbar template, moved to a better internal code model, added method support along with refresh data and current page data, support for access to full data model returned from server via relative paths in cell templates. Also included MVC example.
 29/12/2012 |0.40    |Improvements to templates, adoption of bootstrap style page numbers, POST supported for server side communication, bug fixes resulting from Handlebars adoption in 0.30
 08/09/2012 |0.30    |Updated to use the Handlebars template library for greater flexibility
@@ -406,11 +441,20 @@ Date       |Version |Changes
 04/04/2012 |0.15    |Added support for Mustache templates
 04/03/2012 |0.1     |Initial release
 
-## Upcoming (Possible) Breaking Changes in 0.6
+## Breaking Changes in 0.5 to 0.6
 
-As the grid has got more complex (it's no longer quite so "simple") the initial data binding approach is starting to cause friction in the code. My intention is to replace this with a more flexible callback approach in 0.6 and remove the existing methods.
+The grid now defaults to using Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2:
 
-I intend this to be the only change in 0.6 so that people can continue to use 0.5.
+    $(document).ready(function() {
+        $("#exampleGrid").simplePagingGrid({
+            bootstrapVersion: 2,
+            data: [
+                { "Name": "Pineapple", "Price": 1.50, "Quantity": 2 },
+                { "Name": "Banana", "Price": 0.30, "Quantity": 5 }]
+        });
+    });
+
+The dataFunction has been updated to use a callback rather than the straight return of data to enable custom Ajax calls to make. It can still be used in pure client models - see the existing dataFunction example.
 
 ## Breaking Changes 0.3 to 0.4
 
