@@ -712,7 +712,7 @@
         // $("#grid").simplePagingGrid("refresh", "http://my.data.url/action")
 
         refresh: function(optionalUrl) {
-            this._refreshData(true, optionalUrl);
+            this._refreshData(false, optionalUrl);
         },
 
         currentPageData: function(callback) {
