@@ -12,7 +12,7 @@
         return !!(window.history && history.pushState);
     }
 
-    function defaultUrlWriter(currentPage, pageSize, sortColumn, sortOrder) {
+    function defaultUrlWriter(currentPage, sortColumn, sortOrder) {
         var anchor;
         if (sortColumn !== null) {
             anchor = "#{" + currentPage + "," + sortColumn + "," + sortOrder + "}";
@@ -226,7 +226,7 @@
         _updateUrl: function() {
             var that = this;
             if (that._settings.urlUpdatingEnabled && supportsHistoryApi()) {
-                that._settings.urlWriter(that._currentPage, that._settings.pageSize, that._sortedColumn, that._sortOrder);
+                that._settings.urlWriter(that._currentPage, that._sortedColumn, that._sortOrder);
             }
         },
 
@@ -237,16 +237,25 @@
                 if (result !== null) {
                     that._currentPage = result.currentPage;
                     that._sortOrder = result.sortOrder;
-                    //that._sortedColumn = result.sortColumn;
+                    that._sortedColumn = result.sortColumn;
                 }
                 else {
                     that._currentPage = that._settings.pageNumber;
                     that._sortOrder = that._settings.sortOrder;
-                    //that._sortedColumn = that._settings.initialSortColumn;
+                    that._sortedColumn = that._settings.initialSortColumn;
                 }
 
                 if (refresh) {
                     that._refreshData(updateUrl);
+                    $(".sort-ascending").css('opacity', '0.5');
+                    $(".sort-descending").css('opacity', '0.5');
+                    if (that._sortedColumn !== null) {
+                        var sortIndex = that._settings.columnKeys.indexOf(that._sortedColumn);
+                        var thSet = that._table.find('th');
+                        var th = $(thSet[sortIndex]);
+
+                        th.find(that._sortOrder === "asc" ? ".sort-ascending" : ".sort-descending").css('opacity', '1.0');
+                    }
                 }
             }
         },

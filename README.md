@@ -4,7 +4,7 @@ Simple Paging Grid is a lightweight CSS friendly readonly grid that supports bot
 
 This latest version of the grid incorporates much of the feedback that has been given to me on GitHub and for which I am really grateful. Time pressures meant it took me a while to get this out but I'm still committed to supporting Simple Paging Grid - I use it myself extensively.
 
-*Please note that Simple Paging Grid by default uses Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2 (an example is provided in the examples folder).*
+*Please note that Simple Paging Grid by default uses Bootstrap 3. To continue to use Bootstrap 2 set the bootstrapVersion property to 2 (an example is provided in the examples folder). Also the grid now has back and forward browser button (history) support enabled by default - set urlUpdatingEnabled to false to disable this.*
 
 ![Screenshot]
 (http://www.accidentalfish.com/simple-paging-grid-screenshot.png)
@@ -121,8 +121,11 @@ showHeader      |*(Optional)* True to show the column headers, false to hide. De
 showPageNumbers |*(Optional)* If this is set to true and the grid is populated with an object that supplies the total number of rows (see below) then quick links to specific page numbers are shown in the button bar.
 sortable        |*(Optional)* An array of boolean values indicating if the grid can be sorted by the column. If unspecified then the grid is not sortable.
 sortorder       |*(Optional)* The starting sort order. Should be asc or desc.
-tableClass      |*(Optional*) The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
-templates       |*(Optional*)The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
+tableClass      |*(Optional)* The CSS class to assign to the created table. Defaults to *table* to give a basic Twitter Bootstrap styled table.
+templates       |*(Optional)*The Simple Paging Grid is built using a variety of templates for the various components. If you want to style things differently or change the controls then you can supply alternative templates instead. See below.
+urlReader       |*(Optional)*An optional function that reads the grids page and sort settings from the URL. The default implementation reads from the anchor.
+urlUpdatingEnabled|*(Optional)*When set to true the grid updates the URl as the page number and sort order is changed, this enables back and forward buttons to behave as expected in the browser. Defaults to true.
+urlWriter       |*(Optional)*An optional function that writes the grids page and sort settings to the URL. The default implementation writes to the anchor. This, and urlReader, should be set to custom functions if for example you want to write into url query parameters.
 
 ## Methods
 
@@ -406,6 +409,14 @@ The example below shows changing the buttons to Twitter Bootstrap primary style 
     });
 
 The default templates can be located near the top of the un-minified source code.
+
+## Browser Back and Forward Button Support (History)
+
+As of version 0.6.0.0 the grid integrates with a browesers history on supported browers (it requires history API support).
+
+This is enabled as a default (to turn it off set urlUpdatingEnabled to false) and the standard behavior is to write the settings into the anchor. You can change this behaviour by supplying new URL write and read functions (urlReader and urlWriter).
+
+If you want to support older browsers (and accept certain limitations) then you can supply functions that modify the window.location.hash property.
 
 ## Examples
 
