@@ -51,7 +51,7 @@ Include jQuery, Handlebars and the Simple Paging Grid script:
 
     <script src="/script/jquery-1.8.3.min.js" type="text/javascript">
     <script src="/script/handlebars-1.0.rc.1.js" type="text/javascript">
-    <script src="/script/simplePagingGrid-0.5.0.2.js" type="text/javascript">
+    <script src="/script/simplePagingGrid-0.6.0.0.js" type="text/javascript">
 
 Note that jQuery and Handlebars can be found at:
 
