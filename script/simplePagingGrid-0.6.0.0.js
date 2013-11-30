@@ -674,6 +674,9 @@
                             tr.append(td);
                         });
                         that._tbody.append(tr);
+                        if (that._settings.rowCreatedEvent !== null) {
+                            that._settings.rowCreatedEvent(tr, rowData);
+                        }
                     }
                 });
 
@@ -803,6 +806,7 @@
             showGotoPage: true,
             numberOfPageLinks: 10,
             pageRenderedEvent: null,
+            rowCreatedEvent: null,
             ajaxError: null,
             showHeader: true,
             pageNumber: 0,
