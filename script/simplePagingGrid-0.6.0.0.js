@@ -665,7 +665,7 @@
                                 td = $('<td>');
                             }
 
-                            if (that._compiledCellTemplates !== null && that._compiledCellTemplates[index] !== null && index < that._compiledCellTemplates[index].length && that._compiledCellTemplates[index][rowIndex] !== null) {
+                            if (that._compiledCellTemplates !== null && that._compiledCellTemplates[index] !== null && rowIndex < that._compiledCellTemplates[index].length && that._compiledCellTemplates[index][rowIndex] !== null) {
                                 td.html(that._compiledCellTemplates[index][rowIndex](that._sourceData));
                             } else {
                                 var value = rowData[propertyName];
